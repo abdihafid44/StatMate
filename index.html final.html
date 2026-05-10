@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>StatMate — UoH Study Platform</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a1a;min-height:100vh}
+.topbar{background:#fff;border-bottom:1px solid #e5e5e5;padding:0 1.5rem;display:flex;align-items:center;justify-content:space-between;height:56px;position:sticky;top:0;z-index:10}
+.logo{font-size:19px;font-weight:600;display:flex;align-items:center;gap:10px;text-decoration:none;color:#1a1a1a}
+.logo-icon{width:32px;height:32px;background:#1D9E75;border-radius:8px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:15px;font-weight:700}
+.nav{display:flex;gap:4px}
+.nav-btn{background:none;border:none;cursor:pointer;padding:7px 14px;border-radius:8px;font-size:13px;color:#666;display:flex;align-items:center;gap:6px;transition:all 0.15s;font-weight:500}
+.nav-btn:hover{background:#f0f0ec;color:#1a1a1a}
+.nav-btn.active{background:#f0f0ec;color:#1a1a1a}
+.content{flex:1;padding:1.5rem;max-width:920px;width:100%;margin:0 auto}
+.panel{display:none}
+.panel.active{display:block}
+.card{background:#fff;border:1px solid #e5e5e5;border-radius:12px;padding:1.25rem}
+.section-title{font-size:15px;font-weight:600;margin-bottom:1rem;display:flex;align-items:center;gap:8px;color:#1a1a1a}
+.btn{background:none;border:1px solid #d0d0d0;border-radius:8px;padding:7px 14px;font-size:13px;cursor:pointer;color:#1a1a1a;display:inline-flex;align-items:center;gap:6px;transition:all 0.15s;font-weight:500}
+.btn:hover{background:#f5f5f0}
+.btn.primary{background:#1D9E75;color:#fff;border-color:#1D9E75}
+.btn.primary:hover{background:#0F6E56}
+.btn.sm{padding:5px 10px;font-size:12px}
+input[type=text],select,textarea{width:100%;border:1px solid #d0d0d0;border-radius:8px;padding:9px 13px;font-size:14px;background:#fff;color:#1a1a1a;outline:none;font-family:inherit}
+input[type=text]:focus,select:focus,textarea:focus{border-color:#1D9E75;box-shadow:0 0 0 3px rgba(29,158,117,0.12)}
+.file-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid #f0f0ec}
+.file-row:last-child{border-bottom:none}
+.file-icon{width:36px;height:36px;border-radius:8px;background:#e8f7f2;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:#1D9E75;font-size:18px}
+.file-meta{flex:1;min-width:0}
+.file-name{font-size:14px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.file-sub{font-size:12px;color:#888;margin-top:2px}
+.file-actions{display:flex;gap:6px;flex-shrink:0}
+.empty{text-align:center;padding:3rem 1rem;color:#888;font-size:14px}
+.empty i{font-size:40px;display:block;margin-bottom:12px;opacity:0.35}
+.chat-wrap{display:flex;flex-direction:column;height:500px;border:1px solid #e5e5e5;border-radius:12px;overflow:hidden}
+.chat-msgs{flex:1;overflow-y:auto;padding:1rem;display:flex;flex-direction:column;gap:12px;background:#fafafa}
+.msg{max-width:80%;padding:10px 14px;border-radius:12px;font-size:14px;line-height:1.6}
+.msg.user{align-self:flex-end;background:#1D9E75;color:#fff;border-radius:12px 12px 3px 12px}
+.msg.ai{align-self:flex-start;background:#fff;border:1px solid #e5e5e5;border-radius:12px 12px 12px 3px}
+.msg.thinking{opacity:0.6;font-style:italic}
+.chat-bottom{padding:10px;background:#fff;border-top:1px solid #e5e5e5;display:flex;gap:8px}
+.chat-bottom input{flex:1;margin:0}
+.quick-btns{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:1rem}
+.quick-btn{font-size:12px;padding:6px 12px;border:1px solid #d0d0d0;border-radius:20px;background:#fff;cursor:pointer;color:#555;transition:all 0.15s}
+.quick-btn:hover{border-color:#1D9E75;color:#1D9E75;background:#f0faf6}
+.calc-wrap{display:grid;grid-template-columns:1fr 1fr;gap:1rem}
+.calc-display{background:#f5f5f0;border:1px solid #e5e5e5;border-radius:10px;padding:16px;text-align:right;margin-bottom:12px}
+.calc-expr{font-size:12px;color:#888;min-height:18px;word-break:break-all}
+.calc-val{font-size:30px;font-weight:600;word-break:break-all;color:#1a1a1a}
+.calc-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}
+.calc-btn{padding:13px 6px;border:1px solid #e5e5e5;border-radius:8px;background:#fff;font-size:14px;cursor:pointer;color:#1a1a1a;transition:background 0.1s;text-align:center;font-family:inherit}
+.calc-btn:hover{background:#f5f5f0}
+.calc-btn.op{color:#1D9E75;font-weight:600}
+.calc-btn.eq{background:#1D9E75;color:#fff;border-color:#1D9E75;font-weight:600}
+.calc-btn.eq:hover{background:#0F6E56}
+.calc-btn.fn{font-size:12px;color:#555}
+.calc-btn.span2{grid-column:span 2}
+.calc-btn.clr{color:#c0392b}
+.upload-zone{border:2px dashed #d0d0d0;border-radius:12px;padding:2rem;text-align:center;cursor:pointer;transition:all 0.15s;margin-top:1rem}
+.upload-zone:hover{border-color:#1D9E75;background:#f0faf6}
+.upload-zone i{font-size:36px;color:#1D9E75;margin-bottom:8px;display:block}
+.upload-zone p{font-size:14px;color:#555}
+.upload-zone span{font-size:12px;color:#888}
+.upload-input{display:none}
+.status{font-size:12px;padding:4px 10px;border-radius:20px;display:inline-flex;align-items:center;gap:5px;font-weight:500}
+.status.ok{background:#e8f7f2;color:#0F6E56}
+.status.err{background:#fde8e8;color:#c0392b}
+.status.loading{background:#f0f0ec;color:#555}
+.reader-frame{width:100%;height:570px;border:1px solid #e5e5e5;border-radius:10px;background:#f5f5f0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;color:#888;font-size:14px}
+.reader-frame i{font-size:44px;opacity:0.3}
+.hist-row{padding:8px 0;border-bottom:1px solid #f0f0ec;font-size:13px}
+.hist-expr{color:#aaa;font-size:11px}
+.hist-result{font-weight:600;color:#1a1a1a}
+@media(max-width:620px){
+  .nav-btn span{display:none}
+  .calc-wrap{grid-template-columns:1fr}
+  .calc-btn{padding:11px 4px;font-size:13px}
+  .content{padding:1rem}
+  .msg{max-width:90%}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <a class="logo" href="#">
+    <div class="logo-icon">S</div>
+    StatMate
+  </a>
+  <nav class="nav">
+    <button class="nav-btn active" onclick="showPanel('drive')" id="tab-drive">
+      <i class="ti ti-folder"></i><span>Drive</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('reader')" id="tab-reader">
+      <i class="ti ti-book"></i><span>Reader</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('tutor')" id="tab-tutor">
+      <i class="ti ti-robot"></i><span>AI Tutor</span>
+    </button>
+    <button class="nav-btn" onclick="showPanel('calc')" id="tab-calc">
+      <i class="ti ti-calculator"></i><span>Calculator</span>
+    </button>
+  </nav>
+</div>
+
+<div class="content">
+
+  <!-- DRIVE -->
+  <div class="panel active" id="panel-drive">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:1rem;flex-wrap:wrap;gap:10px">
+      <div>
+        <div class="section-title" style="margin-bottom:6px"><i class="ti ti-folder"></i> Course materials</div>
+        <span id="conn-status" class="status loading"><i class="ti ti-loader"></i> Connecting…</span>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">
+        <select id="year-filter" style="width:auto;font-size:13px" onchange="filterFiles()">
+          <option value="">All years</option>
+          <option>Year 1</option><option>Year 2</option><option>Year 3</option><option>Year 4</option>
+        </select>
+        <label class="btn primary" for="upload-input" style="cursor:pointer"><i class="ti ti-upload"></i> Upload</label>
+        <input type="file" id="upload-input" class="upload-input" accept=".pdf,.ppt,.pptx,.doc,.docx,.png,.jpg,.jpeg" multiple onchange="uploadFiles(event)">
+      </div>
+    </div>
+    <div class="card" id="file-list-card">
+      <div id="file-list"><div class="empty"><i class="ti ti-loader"></i>Loading…</div></div>
+    </div>
+    <div class="upload-zone" onclick="document.getElementById('upload-input').click()">
+      <i class="ti ti-cloud-upload"></i>
+      <p>Drop files here or click to upload</p>
+      <span>PDF, PPT, DOCX, PNG, JPG supported</span>
+    </div>
+  </div>
+
+  <!-- READER -->
+  <div class="panel" id="panel-reader">
+    <div class="section-title" style="margin-bottom:1rem"><i class="ti ti-book"></i> File reader</div>
+    <div class="card" style="padding:0.75rem 1.25rem;margin-bottom:1rem;display:flex;align-items:center;gap:12px">
+      <select id="reader-select" style="flex:1;font-size:13px" onchange="loadReader()">
+        <option value="">Choose a file to open…</option>
+      </select>
+      <button class="btn sm" id="reader-dl" style="display:none" onclick="downloadCurrent()"><i class="ti ti-download"></i> Download</button>
+    </div>
+    <div id="reader-area" class="reader-frame">
+      <i class="ti ti-file-description"></i>
+      <p>Select a file from Drive to open it here</p>
+    </div>
+  </div>
+
+  <!-- AI TUTOR -->
+  <div class="panel" id="panel-tutor">
+    <div class="section-title" style="margin-bottom:4px"><i class="ti ti-robot"></i> AI statistics tutor</div>
+    <p style="font-size:13px;color:#888;margin-bottom:1rem">Powered by Claude AI — ask anything about biostatistics or your course materials.</p>
+    <div class="quick-btns">
+      <button class="quick-btn" onclick="quickAsk(this)">What is a p-value?</button>
+      <button class="quick-btn" onclick="quickAsk(this)">Explain confidence intervals</button>
+      <button class="quick-btn" onclick="quickAsk(this)">t-test vs ANOVA — when to use each?</button>
+      <button class="quick-btn" onclick="quickAsk(this)">What is standard deviation?</button>
+      <button class="quick-btn" onclick="quickAsk(this)">Explain regression analysis</button>
+      <button class="quick-btn" onclick="quickAsk(this)">What is statistical power?</button>
+    </div>
+    <div class="chat-wrap">
+      <div class="chat-msgs" id="chat-msgs">
+        <div class="msg ai">Hi! I'm your AI statistics tutor for UoH. Ask me anything about biostatistics, research methods, or data analysis. 📊</div>
+      </div>
+      <div class="chat-bottom">
+        <input type="text" id="chat-input" placeholder="Ask a statistics question…" onkeydown="if(event.key==='Enter')sendChat()">
+        <button class="btn primary" onclick="sendChat()"><i class="ti ti-send"></i></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- CALCULATOR -->
+  <div class="panel" id="panel-calc">
+    <div class="section-title" style="margin-bottom:1rem"><i class="ti ti-calculator"></i> Scientific calculator</div>
+    <div class="calc-wrap">
+      <div class="card">
+        <div class="calc-display">
+          <div class="calc-expr" id="calc-expr"></div>
+          <div class="calc-val" id="calc-val">0</div>
+        </div>
+        <div class="calc-grid">
+          <button class="calc-btn fn" onclick="calcFn('sin(')">sin</button>
+          <button class="calc-btn fn" onclick="calcFn('cos(')">cos</button>
+          <button class="calc-btn fn" onclick="calcFn('tan(')">tan</button>
+          <button class="calc-btn fn" onclick="calcFn('log(')">log</button>
+          <button class="calc-btn fn" onclick="calcFn('ln(')">ln</button>
+          <button class="calc-btn fn" onclick="calcFn('sqrt(')">√</button>
+          <button class="calc-btn fn" onclick="calcFn('^2')">x²</button>
+          <button class="calc-btn fn" onclick="calcFn('fact(')">n!</button>
+          <button class="calc-btn fn" onclick="calcFn('Math.PI')">π</button>
+          <button class="calc-btn fn" onclick="calcFn('Math.E')">e</button>
+          <button class="calc-btn op" onclick="calcFn('(')">(</button>
+          <button class="calc-btn op" onclick="calcFn(')')">)</button>
+          <button class="calc-btn" onclick="calcNum('7')">7</button>
+          <button class="calc-btn" onclick="calcNum('8')">8</button>
+          <button class="calc-btn" onclick="calcNum('9')">9</button>
+          <button class="calc-btn op" onclick="calcOp('/')">÷</button>
+          <button class="calc-btn" onclick="calcNum('4')">4</button>
+          <button class="calc-btn" onclick="calcNum('5')">5</button>
+          <button class="calc-btn" onclick="calcNum('6')">6</button>
+          <button class="calc-btn op" onclick="calcOp('*')">×</button>
+          <button class="calc-btn" onclick="calcNum('1')">1</button>
+          <button class="calc-btn" onclick="calcNum('2')">2</button>
+          <button class="calc-btn" onclick="calcNum('3')">3</button>
+          <button class="calc-btn op" onclick="calcOp('-')">−</button>
+          <button class="calc-btn" onclick="calcNum('0')">0</button>
+          <button class="calc-btn" onclick="calcNum('.')">.</button>
+          <button class="calc-btn clr" onclick="calcClear()">C</button>
+          <button class="calc-btn op" onclick="calcOp('+')">+</button>
+          <button class="calc-btn eq span2" onclick="calcEquals()">=</button>
+          <button class="calc-btn op" onclick="calcBackspace()">⌫</button>
+          <button class="calc-btn op" onclick="calcOp('%')">%</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="section-title" style="font-size:14px;margin-bottom:0.75rem"><i class="ti ti-history"></i> History</div>
+        <div id="calc-history">
+          <div style="color:#bbb;font-size:12px">No calculations yet</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+const SUPA_URL = 'https://dedyworlrfalwoujwkyx.supabase.co';
+const SUPA_KEY = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
+const BUCKET = 'course-materials';
+const GEMINI_KEY = 'AIzaSyD75keKIn-uhCN7gjTO87s7soiS_usXOj8';
+const hdrs = {'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
+
+let allFiles = [], currentFileUrl = null;
+
+function showPanel(name) {
+  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('panel-'+name).classList.add('active');
+  document.getElementById('tab-'+name).classList.add('active');
+}
+
+async function loadFiles() {
+  const st = document.getElementById('conn-status');
+  try {
+    const r = await fetch(`${SUPA_URL}/storage/v1/object/list/${BUCKET}`, {
+      method:'POST',
+      headers:{...hdrs,'Content-Type':'application/json'},
+      body:JSON.stringify({prefix:'',limit:200,offset:0})
+    });
+    const data = await r.json();
+    if (!r.ok) throw new Error(data.message || 'Error');
+    allFiles = (data||[]).filter(f => f.name && !f.name.endsWith('/'));
+    st.className='status ok';
+    st.innerHTML=`<i class="ti ti-check"></i> Connected &middot; ${allFiles.length} file${allFiles.length!==1?'s':''}`;
+    renderFiles(allFiles);
+    populateReaderSelect(allFiles);
+  } catch(e) {
+    st.className='status err';
+    st.innerHTML=`<i class="ti ti-alert-circle"></i> ${e.message||'Connection failed'}`;
+    document.getElementById('file-list').innerHTML='<div class="empty"><i class="ti ti-wifi-off"></i><p>Could not load files.</p></div>';
+  }
+}
+
+function fileIcon(name) {
+  const ext=(name.split('.').pop()||'').toLowerCase();
+  if(ext==='pdf') return 'ti-file-type-pdf';
+  if(['ppt','pptx'].includes(ext)) return 'ti-presentation';
+  if(['doc','docx'].includes(ext)) return 'ti-file-word';
+  if(['png','jpg','jpeg'].includes(ext)) return 'ti-photo';
+  return 'ti-file';
+}
+
+function fileSize(b) {
+  if(!b) return '';
+  if(b<1024) return b+' B';
+  if(b<1048576) return (b/1024).toFixed(1)+' KB';
+  return (b/1048576).toFixed(1)+' MB';
+}
+
+function renderFiles(files) {
+  const el=document.getElementById('file-list');
+  if(!files.length){el.innerHTML='<div class="empty"><i class="ti ti-folder-off"></i><p>No files yet. Upload something to get started.</p></div>';return;}
+  el.innerHTML=files.map(f=>`
+    <div class="file-row">
+      <div class="file-icon"><i class="ti ${fileIcon(f.name)}"></i></div>
+      <div class="file-meta">
+        <div class="file-name">${f.name}</div>
+        <div class="file-sub">${fileSize(f.metadata?.size)}${f.updated_at?' · '+new Date(f.updated_at).toLocaleDateString():''}</div>
+      </div>
+      <div class="file-actions">
+        <button class="btn sm" onclick="openInReader('${f.name}')"><i class="ti ti-book"></i> View</button>
+        <button class="btn sm" onclick="downloadFile('${f.name}')"><i class="ti ti-download"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+function filterFiles(){
+  const yr=document.getElementById('year-filter').value.toLowerCase();
+  renderFiles(yr?allFiles.filter(f=>f.name.toLowerCase().includes(yr.replace(' ',''))):allFiles);
+}
+
+function getPublicUrl(name){return `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${encodeURIComponent(name)}`;}
+
+function openInReader(name){
+  showPanel('reader');
+  const sel=document.getElementById('reader-select');
+  for(let i=0;i<sel.options.length;i++) if(sel.options[i].value===name) sel.selectedIndex=i;
+  renderReader(name);
+}
+
+function populateReaderSelect(files){
+  const sel=document.getElementById('reader-select');
+  sel.innerHTML='<option value="">Choose a file to open…</option>'+files.map(f=>`<option value="${f.name}">${f.name}</option>`).join('');
+}
+
+function loadReader(){const name=document.getElementById('reader-select').value;if(name)renderReader(name);}
+
+function renderReader(name){
+  const url=getPublicUrl(name);
+  currentFileUrl=url;
+  const ext=(name.split('.').pop()||'').toLowerCase();
+  const area=document.getElementById('reader-area');
+  document.getElementById('reader-dl').style.display='inline-flex';
+  area.innerHTML='';
+  area.style.cssText='';
+  if(ext==='pdf'){
+    const iframe=document.createElement('iframe');
+    iframe.src=url;
+    iframe.style.cssText='width:100%;height:570px;border:none;border-radius:10px';
+    area.style.display='block';
+    area.style.height='auto';
+    area.appendChild(iframe);
+  } else if(['png','jpg','jpeg','gif'].includes(ext)){
+    area.className='reader-frame';
+    area.innerHTML=`<img src="${url}" style="max-width:95%;max-height:520px;border-radius:8px;object-fit:contain" alt="${name}">`;
+  } else {
+    area.className='reader-frame';
+    area.innerHTML=`<i class="ti ti-file-description"></i><p>${name}</p><a href="${url}" target="_blank" class="btn primary" style="margin-top:8px"><i class="ti ti-external-link"></i> Open file</a>`;
+  }
+}
+
+function downloadCurrent(){if(currentFileUrl)window.open(currentFileUrl,'_blank');}
+function downloadFile(name){window.open(getPublicUrl(name),'_blank');}
+
+async function uploadFiles(e){
+  const files=e.target.files;
+  if(!files.length)return;
+  const st=document.getElementById('conn-status');
+  st.className='status loading';
+  st.innerHTML=`<i class="ti ti-loader"></i> Uploading ${files.length} file${files.length>1?'s':''}…`;
+  for(const file of files){
+    await fetch(`${SUPA_URL}/storage/v1/object/${BUCKET}/${encodeURIComponent(file.name)}`,{
+      method:'POST',headers:{...hdrs,'Content-Type':file.type,'x-upsert':'true'},body:file
+    });
+  }
+  e.target.value='';
+  await loadFiles();
+}
+
+let chatHistory=[];
+
+async function sendChat(){
+  const inp=document.getElementById('chat-input');
+  const msg=inp.value.trim();
+  if(!msg)return;
+  inp.value='';
+  appendMsg(msg,'user');
+  chatHistory.push({role:'user',parts:[{text:msg}]});
+  const thinking=appendMsg('Thinking…','ai thinking');
+  try{
+    const res=await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        system_instruction:{parts:[{text:'You are StatMate AI, a friendly and clear statistics tutor for university students at the University of Hargeisa (UoH), Somalia. You specialize in biostatistics, research methods, and data analysis. Give clear, concise answers with examples where helpful. Keep responses focused and easy to understand for university students.'}]},
+        contents:chatHistory
+      })
+    });
+    const data=await res.json();
+    const reply=data.candidates?.[0]?.content?.parts?.[0]?.text||'Sorry, could not get a response. Please try again.';
+    chatHistory.push({role:'model',parts:[{text:reply}]});
+    thinking.textContent=reply;
+    thinking.classList.remove('thinking');
+  }catch(err){
+    thinking.textContent='Connection error. Please check your internet and try again.';
+    thinking.classList.remove('thinking');
+  }
+}
+
+function appendMsg(text,cls){
+  const msgs=document.getElementById('chat-msgs');
+  const div=document.createElement('div');
+  div.className='msg '+cls;
+  div.textContent=text;
+  msgs.appendChild(div);
+  msgs.scrollTop=msgs.scrollHeight;
+  return div;
+}
+
+function quickAsk(btn){document.getElementById('chat-input').value=btn.textContent;sendChat();}
+
+// CALCULATOR
+let calcExpr='',calcResult='';
+function updateCalcDisplay(){
+  document.getElementById('calc-expr').textContent=calcExpr;
+  document.getElementById('calc-val').textContent=calcResult||calcExpr||'0';
+}
+function calcNum(v){calcExpr+=v;calcResult='';updateCalcDisplay();}
+function calcOp(op){calcExpr+=op;calcResult='';updateCalcDisplay();}
+function calcFn(fn){
+  if(fn==='^2')calcExpr+='**2';
+  else if(fn==='ln(')calcExpr+='Math.log(';
+  else if(fn==='log(')calcExpr+='Math.log10(';
+  else if(fn==='sqrt(')calcExpr+='Math.sqrt(';
+  else if(fn==='sin(')calcExpr+='Math.sin(';
+  else if(fn==='cos(')calcExpr+='Math.cos(';
+  else if(fn==='tan(')calcExpr+='Math.tan(';
+  else if(fn==='fact(')calcExpr+='fact(';
+  else calcExpr+=fn;
+  calcResult='';updateCalcDisplay();
+}
+function calcClear(){calcExpr='';calcResult='';updateCalcDisplay();}
+function calcBackspace(){calcExpr=calcExpr.slice(0,-1);calcResult='';updateCalcDisplay();}
+function fact(n){n=Math.round(n);if(n<0||n>170)return NaN;let r=1;for(let i=2;i<=n;i++)r*=i;return r;}
+function calcEquals(){
+  if(!calcExpr)return;
+  try{
+    let result=Function('"use strict";const fact='+fact.toString()+';return ('+calcExpr+')')();
+    if(isNaN(result)||!isFinite(result)){calcResult='Error';}
+    else{
+      result=parseFloat(result.toPrecision(10));
+      const display=result.toString();
+      addCalcHistory(calcExpr,display);
+      calcResult=display;calcExpr=display;
+    }
+  }catch(e){calcResult='Error';}
+  updateCalcDisplay();
+}
+function addCalcHistory(expr,result){
+  const h=document.getElementById('calc-history');
+  if(h.querySelector('div[style]'))h.innerHTML='';
+  const row=document.createElement('div');
+  row.className='hist-row';
+  row.innerHTML=`<div class="hist-expr">${expr}</div><div class="hist-result">= ${result}</div>`;
+  h.insertBefore(row,h.firstChild);
+  if(h.children.length>12)h.removeChild(h.lastChild);
+}
+document.addEventListener('keydown',function(e){
+  if(document.getElementById('panel-calc').classList.contains('active')){
+    if(document.activeElement.tagName==='INPUT')return;
+    if(e.key==='Enter')calcEquals();
+    else if(e.key==='Backspace'){calcBackspace();e.preventDefault();}
+    else if('0123456789.+-*/%(). '.includes(e.key))calcNum(e.key);
+  }
+});
+
+loadFiles();
+</script>
+</body>
+</html>
