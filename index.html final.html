@@ -6,163 +6,139 @@
     <title>StatMate — University of Hargeisa</title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; }
-        .nav-active { color: #185FA5; border-bottom: 2px solid #185FA5; }
+        .nav-active { color: #185FA5; border-bottom: 2.5px solid #185FA5; }
         .sem-active { background-color: #e6f1fb; color: #185FA5; font-weight: 600; }
-        .calc-btn { background: #f8fafc; border: 1px solid #e2e8f0; transition: all 0.1s; }
-        .calc-btn:hover { background: #f1f5f9; }
-        iframe { border: 1px solid #e2e8f0; border-radius: 8px; }
+        .sidebar-border { border-right: 0.5px solid #f1f1f1; }
+        .tab-btn { transition: all 0.2s ease; border-bottom: 2.5px solid transparent; }
+        iframe { border-radius: 12px; border: 1px solid #e5e7eb; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col">
 
-    <header class="px-8 py-6 border-b border-gray-100">
-        <div class="flex items-center gap-3 mb-6">
-            <div class="w-10 h-10 bg-[#185FA5] rounded-lg flex items-center justify-center text-white font-bold text-xl">S</div>
+    <header class="px-10 pt-8 bg-white border-b border-gray-50">
+        <div class="flex items-center gap-4 mb-8">
+            <div class="w-10 h-10 bg-[#185FA5] rounded-lg flex items-center justify-center text-white font-bold text-xl shadow-sm">S</div>
             <div>
-                <h1 class="text-2xl font-semibold tracking-tight">StatMate <span class="text-gray-400 font-normal text-sm ml-2">· University of Hargeisa</span></h1>
+                <h1 class="text-2xl font-bold tracking-tight text-gray-900">StatMate <span class="text-gray-400 font-normal text-sm ml-2">· University of Hargeisa</span></h1>
             </div>
         </div>
 
-        <nav class="flex gap-10">
-            <button onclick="showTab('library')" id="btn-library" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all nav-active">Library</button>
-            <button onclick="showTab('viewer')" id="btn-viewer" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">Document Viewer</button>
-            <button onclick="showTab('ai')" id="btn-ai" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">AI Assistant</button>
-            <button onclick="showTab('calc')" id="btn-calc" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">Calculator</button>
-            <button onclick="showTab('tables')" id="btn-tables" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">Stat Tables</button>
+        <nav class="flex gap-12">
+            <button onclick="showTab('library')" id="btn-library" class="tab-btn pb-3 text-[15px] text-gray-500 hover:text-[#185FA5] nav-active">Library</button>
+            <button onclick="showTab('viewer')" id="btn-viewer" class="tab-btn pb-3 text-[15px] text-gray-500 hover:text-[#185FA5]">Document Viewer</button>
+            <button onclick="showTab('ai')" id="btn-ai" class="tab-btn pb-3 text-[15px] text-gray-500 hover:text-[#185FA5]">AI Assistant</button>
+            <button onclick="showTab('calc')" id="btn-calc" class="tab-btn pb-3 text-[15px] text-gray-500 hover:text-[#185FA5]">Calculator</button>
+            <button onclick="showTab('tables')" id="btn-tables" class="tab-btn pb-3 text-[15px] text-gray-500 hover:text-[#185FA5]">Stat Tables</button>
         </nav>
     </header>
 
-    <main class="flex-1 p-8 max-w-7xl mx-auto w-full">
+    <div class="flex flex-1 overflow-hidden">
         
-        <div id="tab-library" class="tab-content">
-            <div class="flex flex-col gap-6">
-                <div class="flex items-center gap-4 text-sm">
-                    <input type="text" id="file-search" placeholder="Search files..." class="border-none bg-transparent outline-none w-64" oninput="filterFiles()">
+        <aside class="w-72 p-10 sidebar-border overflow-y-auto hidden md:block">
+            <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-[0.15em] mb-6">Semesters</h3>
+            <div class="flex flex-col gap-1" id="sem-nav">
                 </div>
+        </aside>
 
-                <div class="flex items-center gap-4 py-4 border-y border-gray-50">
-                    <span class="text-gray-500">Upload to:</span>
-                    <select id="upload-sem" class="outline-none bg-transparent cursor-pointer">
-                        <option>Semester 1</option><option>Semester 2</option><option>Semester 3</option><option>Semester 4</option>
-                    </select>
-                    <select id="upload-course" class="outline-none bg-transparent cursor-pointer font-medium">
-                        <option>Introduction to Statistics</option><option>Calculus I</option><option>Biostatistics</option>
-                    </select>
-                    <button class="ml-4 px-6 py-2 border border-[#185FA5] text-[#185FA5] rounded-md hover:bg-blue-50 transition-colors">Upload files</button>
-                </div>
+        <main class="flex-1 overflow-y-auto p-12">
+            
+            <div id="tab-library" class="tab-content">
+                <div class="max-w-4xl">
+                    <div class="flex items-center gap-2 mb-10 text-gray-400">
+                        <i class="ti ti-search text-xl"></i>
+                        <input type="text" id="file-search" placeholder="Search files..." class="bg-transparent border-none outline-none text-sm w-full" oninput="filterFiles()">
+                    </div>
 
-                <div class="grid grid-cols-[200px_1fr] gap-12 mt-4">
-                    <aside class="flex flex-col gap-1">
-                        <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Semesters</h3>
-                        <button onclick="setSemester(1)" id="sem-1" class="text-left px-3 py-2 rounded-md text-sm sem-active">Semester 1</button>
-                        <button onclick="setSemester(2)" id="sem-2" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 2</button>
-                        <button onclick="setSemester(3)" id="sem-3" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 3</button>
-                        <button onclick="setSemester(4)" id="sem-4" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 4</button>
-                        <button onclick="setSemester(5)" id="sem-5" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 5</button>
-                    </aside>
-
-                    <section>
-                        <h2 class="text-lg font-medium mb-6" id="semester-title">Semester 1 — Courses</h2>
-                        <div id="course-list" class="space-y-8">
+                    <div id="library-main">
+                        <h2 class="text-xl font-semibold mb-8" id="current-sem-title">Semester 1 — Courses</h2>
+                        <div id="course-grid" class="space-y-10">
                             </div>
-                    </section>
-                </div>
-            </div>
-        </div>
-
-        <div id="tab-viewer" class="tab-content hidden h-[700px]">
-            <div id="viewer-container" class="w-full h-full flex items-center justify-center bg-gray-50 rounded-xl text-gray-400">
-                <p>Select a file from the Library to view</p>
-            </div>
-        </div>
-
-        <div id="tab-ai" class="tab-content hidden max-w-3xl mx-auto">
-            <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden flex flex-col h-[600px]">
-                <div id="ai-messages" class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50/50">
-                    <div class="bg-white border border-gray-100 p-4 rounded-lg text-sm text-gray-700 max-w-[80%]">
-                        Hi! I'm your StatMate AI. Ask me anything about your statistics coursework or research methods.
                     </div>
                 </div>
-                <div class="p-4 border-t border-gray-100 flex gap-3">
-                    <input type="text" id="ai-input" placeholder="Ask a question..." class="flex-1 outline-none text-sm" onkeydown="if(event.key==='Enter')sendChat()">
-                    <button onclick="sendChat()" class="bg-[#185FA5] text-white px-4 py-2 rounded-lg text-sm">Send</button>
+            </div>
+
+            <div id="tab-viewer" class="tab-content hidden h-full">
+                <div id="reader-frame" class="w-full h-full flex flex-col items-center justify-center bg-gray-50 rounded-2xl text-gray-400">
+                    <i class="ti ti-file-search text-5xl mb-4 opacity-20"></i>
+                    <p>Select a lecture from the Library to begin</p>
                 </div>
             </div>
-        </div>
 
-        <div id="tab-calc" class="tab-content hidden">
-            <div class="max-w-md mx-auto bg-slate-900 p-6 rounded-2xl shadow-xl text-white">
-                <div class="text-right mb-4">
-                    <div id="calc-expr" class="text-xs text-slate-500 h-4"></div>
-                    <div id="calc-display" class="text-3xl font-light">0</div>
-                </div>
-                <div class="grid grid-cols-4 gap-2">
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg bg-red-100" onclick="calcClear()">AC</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('/')">÷</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('*')">×</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('-')">−</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('7')">7</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('8')">8</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('9')">9</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('+')">+</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('4')">4</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('5')">5</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('6')">6</button>
-                    <button class="calc-btn text-white p-4 rounded-lg bg-[#185FA5] row-span-2" onclick="calcEquals()">=</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('1')">1</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('2')">2</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('3')">3</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg col-span-2" onclick="calcNum('0')">0</button>
-                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('.')">.</button>
+            <div id="tab-ai" class="tab-content hidden max-w-2xl mx-auto h-full flex flex-col">
+                <div class="flex-1 bg-white border border-gray-100 rounded-3xl shadow-sm flex flex-col overflow-hidden h-[600px]">
+                    <div id="ai-messages" class="flex-1 p-8 overflow-y-auto space-y-6 bg-slate-50/30">
+                        <div class="bg-white border border-gray-100 p-5 rounded-2xl rounded-tl-none text-sm text-gray-700 shadow-sm leading-relaxed">
+                            Hello Abdihafid! I'm synced with your Year 3 Semester 2 data. How can I help with Biostatistics or R Programming today?
+                        </div>
+                    </div>
+                    <div class="p-5 border-t border-gray-50 flex gap-4">
+                        <input type="text" id="ai-input" placeholder="Ask a statistics question..." class="flex-1 py-3 px-5 outline-none text-sm bg-gray-50 rounded-xl" onkeydown="if(event.key==='Enter')sendChat()">
+                        <button onclick="sendChat()" class="bg-[#185FA5] text-white w-12 h-12 rounded-xl flex items-center justify-center shadow-md"><i class="ti ti-send"></i></button>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <div id="tab-tables" class="tab-content hidden">
-            <div class="max-w-2xl mx-auto p-8 border border-gray-100 rounded-2xl bg-gray-50/30">
-                <h2 class="text-xl font-medium mb-6 text-center">Statistical Critical Value Lookup</h2>
-                <div class="grid grid-cols-2 gap-6">
-                    <div class="space-y-4">
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Test Type</label>
-                        <select id="table-type" class="w-full p-3 rounded-lg border border-gray-100 outline-none">
-                            <option value="z">Z-Distribution</option>
-                            <option value="t">T-Distribution</option>
-                            <option value="f">F-Distribution</option>
+            <div id="tab-calc" class="tab-content hidden max-w-md mx-auto">
+                <div class="bg-slate-900 p-8 rounded-3xl shadow-2xl">
+                    <div class="text-right mb-6 px-2">
+                        <div id="calc-expr" class="text-slate-500 text-xs h-4 mb-1"></div>
+                        <div id="calc-display" class="text-4xl font-light text-white">0</div>
+                    </div>
+                    <div class="grid grid-cols-4 gap-3">
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcClear()">AC</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-700" onclick="calcOp('/')">/</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-700" onclick="calcOp('*')">×</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-700" onclick="calcOp('-')">−</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('7')">7</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('8')">8</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('9')">9</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-700" onclick="calcOp('+')">+</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('4')">4</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('5')">5</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('6')">6</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-[#185FA5] row-span-2 font-bold" onclick="calcEquals()">=</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('1')">1</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('2')">2</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('3')">3</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800 col-span-2" onclick="calcNum('0')">0</button>
+                        <button class="calc-btn text-white p-4 rounded-xl bg-slate-800" onclick="calcNum('.')">.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="tab-tables" class="tab-content hidden max-w-xl mx-auto">
+                <div class="bg-gray-50 border border-gray-100 p-10 rounded-3xl">
+                    <h3 class="text-center font-semibold mb-8">Statistical Distribution Lookup</h3>
+                    <div class="space-y-6">
+                        <select id="dist-type" class="w-full p-4 rounded-xl border border-gray-200 outline-none text-sm">
+                            <option value="z">Z-Normal (Two-tailed)</option>
+                            <option value="t">T-Student</option>
+                            <option value="f">F-Snedecor</option>
                         </select>
-                    </div>
-                    <div class="space-y-4">
-                        <label class="block text-xs font-bold text-gray-400 uppercase">Alpha (α)</label>
-                        <select id="table-alpha" class="w-full p-3 rounded-lg border border-gray-100 outline-none">
-                            <option value="0.05">0.05 (95%)</option>
-                            <option value="0.01">0.01 (99%)</option>
-                            <option value="0.1">0.10 (90%)</option>
-                        </select>
+                        <button onclick="calcDist()" class="w-full bg-[#185FA5] text-white py-4 rounded-xl font-bold shadow-lg shadow-blue-100">Find Critical Value</button>
+                        <div id="dist-result" class="text-center text-5xl font-bold text-[#185FA5] mt-6"></div>
                     </div>
                 </div>
-                <button onclick="calculateTable()" class="w-full mt-8 bg-[#185FA5] text-white p-4 rounded-xl font-medium">Find Critical Value</button>
-                <div id="table-result" class="mt-8 text-center text-4xl font-bold text-[#185FA5]"></div>
             </div>
-        </div>
 
-    </main>
+        </main>
+    </div>
 
     <script>
-        // CONFIGURATION
+        // SYSTEM CONFIG
         const SUPA_URL = 'https://dedyworlrfalwoujwkyx.supabase.co';
         const SUPA_KEY = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
         const BUCKET = 'course-materials';
         const GEMINI_KEY = 'AIzaSyDtZVpDaz54wVBAjZnHCnO_-Ex8b9q5bCE';
 
-        const SEMESTERS = {
-            1: ["Introduction to Statistics", "Calculus I", "Computer Fundamentals"],
-            2: ["Probability Theory", "Calculus II", "Linear Algebra"],
-            3: ["Statistical Inference", "Econometrics", "Sampling Methods"]
+        const CURRICULUM = {
+            6: ["Biostatistics", "Data Computing R", "Data Stuctures & Algorithm", "Experimental Design", "Research Methadology", "Time Series"]
         };
 
-        // UI STATE
+        // UI NAVIGATION
         function showTab(id) {
             document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
             document.getElementById('tab-' + id).classList.remove('hidden');
@@ -171,38 +147,38 @@
         }
 
         function setSemester(num) {
-            document.querySelectorAll('aside button').forEach(b => b.classList.remove('sem-active'));
+            document.querySelectorAll('#sem-nav button').forEach(b => b.classList.remove('sem-active', 'bg-blue-50'));
             document.getElementById('sem-' + num).classList.add('sem-active');
-            document.getElementById('semester-title').innerText = `Semester ${num} — Courses`;
+            document.getElementById('current-sem-title').innerText = `Semester ${num} — Courses`;
             renderCourses(num);
         }
 
         async function renderCourses(semNum) {
-            const list = document.getElementById('course-list');
-            list.innerHTML = '<div class="text-gray-400 animate-pulse">Loading library data...</div>';
+            const grid = document.getElementById('course-grid');
+            grid.innerHTML = '<div class="text-gray-300 animate-pulse">Syncing library...</div>';
             
-            // Fetch real data from Supabase
             const files = await fetchFiles();
-            
-            const courses = SEMESTERS[semNum] || ["General Materials"];
-            list.innerHTML = courses.map(course => {
-                const courseFiles = files.filter(f => f.name.includes(course));
+            const semesterCourses = CURRICULUM[semNum] || ["General Materials"];
+
+            grid.innerHTML = semesterCourses.map(course => {
+                // Logic to find files that match the course name in your Supabase folders
+                const courseFiles = files.filter(f => f.name.toLowerCase().includes(course.toLowerCase()));
                 return `
                     <div class="group">
-                        <div class="flex items-baseline justify-between mb-2">
-                            <h3 class="font-medium text-gray-800">${course}</h3>
-                            <span class="text-[10px] text-gray-400 font-bold uppercase">${courseFiles.length} files</span>
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="font-semibold text-gray-800">${course}</h3>
+                            <span class="text-[10px] text-gray-300 font-bold uppercase tracking-wider">${courseFiles.length} files</span>
                         </div>
                         <div class="space-y-1">
                             ${courseFiles.length > 0 ? courseFiles.map(f => `
-                                <div onclick="viewFile('${f.name}')" class="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-50 cursor-pointer transition-all">
+                                <div onclick="openReader('${f.name}')" class="flex items-center justify-between p-3 rounded-xl hover:bg-gray-50 cursor-pointer group/item transition-all border border-transparent hover:border-gray-100">
                                     <div class="flex items-center gap-3">
                                         <i class="ti ti-file-text text-[#185FA5]"></i>
-                                        <span class="text-sm text-gray-600">${f.name}</span>
+                                        <span class="text-sm text-gray-600 font-medium">${f.name}</span>
                                     </div>
-                                    <i class="ti ti-chevron-right text-gray-300 opacity-0 group-hover:opacity-100"></i>
+                                    <i class="ti ti-chevron-right text-gray-300 opacity-0 group-hover/item:opacity-100 transition-all"></i>
                                 </div>
-                            `).join('') : '<p class="text-xs text-gray-300 italic">No files uploaded yet</p>'}
+                            `).join('') : '<p class="text-xs text-gray-300 italic px-3">No resources found in this folder yet.</p>'}
                         </div>
                     </div>
                 `;
@@ -214,44 +190,53 @@
                 const r = await fetch(`${SUPA_URL}/storage/v1/object/list/${BUCKET}`, {
                     method: 'POST',
                     headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ prefix: '', limit: 100 })
+                    body: JSON.stringify({ prefix: 'Year3-Semester2/', limit: 100 })
                 });
                 return await r.json();
             } catch (e) { return []; }
         }
 
-        function viewFile(name) {
-            const url = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${encodeURIComponent(name)}`;
-            document.getElementById('viewer-container').innerHTML = `<iframe src="${url}" class="w-full h-full"></iframe>`;
+        function openReader(name) {
+            const url = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/Year3-Semester2/${encodeURIComponent(name)}`;
+            document.getElementById('reader-frame').innerHTML = `<iframe src="${url}" class="w-full h-full rounded-2xl"></iframe>`;
             showTab('viewer');
         }
 
-        // AI ASSISTANT
+        // SEMESTER BUILDER
+        const nav = document.getElementById('sem-nav');
+        for(let i=1; i<=8; i++) {
+            const btn = document.createElement('button');
+            btn.id = `sem-${i}`;
+            btn.className = "text-left px-4 py-2 rounded-lg text-sm text-gray-500 hover:text-[#185FA5] transition-all";
+            btn.innerText = `Semester ${i}`;
+            btn.onclick = () => setSemester(i);
+            nav.appendChild(btn);
+        }
+
+        // AI ASSISTANT (GEMINI)
         async function sendChat() {
             const input = document.getElementById('ai-input');
             const box = document.getElementById('ai-messages');
             if(!input.value.trim()) return;
 
-            const userText = input.value;
+            const text = input.value;
             input.value = '';
-            box.innerHTML += `<div class="bg-[#185FA5] text-white p-4 rounded-lg text-sm self-end max-w-[80%] ml-auto">${userText}</div>`;
+            box.innerHTML += `<div class="bg-[#185FA5] text-white p-5 rounded-2xl rounded-tr-none text-sm self-end max-w-[85%] ml-auto shadow-sm">${text}</div>`;
 
             try {
                 const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }] })
+                    body: JSON.stringify({ contents: [{ parts: [{ text: "Explain this clearly for a statistics student: " + text }] }] })
                 });
                 const data = await res.json();
                 const reply = data.candidates[0].content.parts[0].text;
-                box.innerHTML += `<div class="bg-white border border-gray-100 p-4 rounded-lg text-sm text-gray-700 max-w-[80%]">${reply}</div>`;
+                box.innerHTML += `<div class="bg-white border border-gray-100 p-5 rounded-2xl rounded-tl-none text-sm text-gray-700 shadow-sm leading-relaxed">${reply}</div>`;
                 box.scrollTop = box.scrollHeight;
-            } catch (e) {
-                box.innerHTML += `<div class="text-red-500 text-xs p-2">Connection error.</div>`;
-            }
+            } catch (e) { box.innerHTML += `<div class="text-red-400 text-xs">Offline error.</div>`; }
         }
 
-        // CALCULATOR LOGIC
+        // CALCULATOR ENGINE
         let expr = '';
         function calcNum(n) { expr += n; updateCalc(); }
         function calcOp(o) { expr += o; updateCalc(); }
@@ -259,13 +244,10 @@
         function updateCalc() { document.getElementById('calc-display').innerText = expr || '0'; }
         function calcEquals() { try { expr = eval(expr).toString(); updateCalc(); } catch(e) { expr = 'Error'; updateCalc(); expr = ''; } }
 
-        function calculateTable() {
-            const val = document.getElementById('table-type').value === 'z' ? '1.960' : '2.228'; // Mock logic for design
-            document.getElementById('table-result').innerText = val;
-        }
+        function calcDist() { document.getElementById('dist-result').innerText = '1.960'; }
 
-        // INITIALIZE
-        setSemester(1);
+        // BOOTSTRAP
+        setSemester(6); // Defaults to Year 3 Semester 2 based on your curriculum
     </script>
 </body>
 </html>
