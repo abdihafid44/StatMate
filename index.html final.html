@@ -394,16 +394,42 @@
 
     async function buildCard(semNum, course) {
         const folderPath = `Semester ${semNum}/${course}/`;
-        const files = await fetchCloudFiles(folderPath);
-        const real = files.filter(f => f.id && !f.name.endsWith('/') && !f.name.includes('.emptyFolder'));
+        
+        // Fetch everything at the top level of the course
+        const topLevel = await fetchCloudFiles(folderPath);
+        
+        // Get valid files directly in the course folder
+        const real = topLevel.filter(f => f.id && !f.name.endsWith('/') && !f.name.includes('.emptyFolder'));
+        
+        // Check for sub-folders (like "Week 1", "Books", etc.)
+        const subFolders = topLevel.filter(f => !f.id); 
+        
+        // Loop through any sub-folders and fetch their contents
+        for (const folder of subFolders) {
+            const subPath = `${folderPath}${folder.name}/`;
+            const subFiles = await fetchCloudFiles(subPath);
+            const subReal = subFiles.filter(f => f.id && !f.name.endsWith('/') && !f.name.includes('.emptyFolder'));
+            
+            subReal.forEach(f => {
+                // Tag the file with its sub-folder name so we know where it came from
+                real.push({ ...f, subFolder: folder.name });
+            });
+        }
 
         const fileRows = real.length > 0
             ? real.map(f => {
-                const fullPath = (folderPath + f.name).replace(/'/g, "\\'");
-                return `<div class="file-row" onclick="openDocument('${fullPath}')">
+                // Construct the correct file path depending on whether it's in a sub-folder
+                const filePath = f.subFolder
+                    ? `${folderPath}${f.subFolder}/${f.name}`
+                    : `${folderPath}${f.name}`;
+                
+                const safePath = filePath.replace(/'/g, "\\'");
+                const displayName = f.subFolder ? `${f.subFolder} · ${f.name}` : f.name;
+                
+                return `<div class="file-row" onclick="openDocument('${safePath}')">
                     <div style="display:flex;align-items:center;gap:.65rem">
                         <i class="ti ti-file-description" style="color:#cbd5e1;font-size:.95rem"></i>
-                        <span class="file-name">${f.name}</span>
+                        <span class="file-name">${displayName}</span>
                     </div>
                     <i class="ti ti-chevron-right"></i>
                 </div>`;
