@@ -1,349 +1,271 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>StatMate — UoH Advanced Statistics OS</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
-<style>
-:root {
-  --primary: #059669;
-  --primary-dark: #065f46;
-  --bg: #f8fafc;
-  --card-bg: #ffffff;
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --border: #e2e8f0;
-  --radius: 12px;
-  --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-}
-
-* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-body { font-family: 'Inter', -apple-system, sans-serif; background: var(--bg); color: var(--text-main); line-height: 1.5; }
-
-/* Navigation & Layout */
-.topbar { background: var(--card-bg); border-bottom: 1px solid var(--border); padding: 0 1.5rem; display: flex; align-items: center; justify-content: space-between; height: 64px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 2px 0 rgb(0 0 0 / 0.05); }
-.logo { font-size: 20px; font-weight: 800; display: flex; align-items: center; gap: 12px; text-decoration: none; color: var(--primary); letter-spacing: -0.5px; }
-.logo-icon { width: 36px; height: 36px; background: var(--primary); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 18px; box-shadow: var(--shadow); }
-
-.nav { display: flex; gap: 8px; background: #f1f5f9; padding: 4px; border-radius: 12px; }
-.nav-btn { background: none; border: none; cursor: pointer; padding: 8px 16px; border-radius: 8px; font-size: 13px; color: var(--text-muted); display: flex; align-items: center; gap: 8px; transition: all 0.2s; font-weight: 600; }
-.nav-btn:hover { color: var(--primary); }
-.nav-btn.active { background: var(--card-bg); color: var(--primary); box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1); }
-
-.content { flex: 1; padding: 2rem 1.5rem; max-width: 1000px; margin: 0 auto; min-height: calc(100vh - 64px); }
-.panel { display: none; animation: fadeIn 0.3s ease; }
-.panel.active { display: block; }
-@keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
-
-/* Cards & Components */
-.card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); margin-bottom: 1.5rem; }
-.section-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.5rem; }
-.section-title { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; color: var(--text-main); }
-
-.file-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1rem; }
-.file-card { background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); padding: 1rem; display: flex; align-items: center; gap: 12px; transition: all 0.2s; cursor: pointer; }
-.file-card:hover { border-color: var(--primary); transform: translateY(-2px); box-shadow: var(--shadow); }
-.file-icon { width: 44px; height: 44px; border-radius: 10px; background: #ecfdf5; color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 22px; flex-shrink: 0; }
-.file-info { flex: 1; overflow: hidden; }
-.file-name { font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.file-meta { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
-
-/* AI Tutor */
-.chat-container { height: 600px; display: flex; flex-direction: column; background: var(--card-bg); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; box-shadow: var(--shadow); }
-.chat-messages { flex: 1; overflow-y: auto; padding: 1.5rem; background: #fdfdfd; display: flex; flex-direction: column; gap: 1rem; }
-.message { max-width: 85%; padding: 12px 16px; border-radius: 14px; font-size: 14px; line-height: 1.6; }
-.message.user { align-self: flex-end; background: var(--primary); color: #fff; border-bottom-right-radius: 2px; }
-.message.ai { align-self: flex-start; background: #f1f5f9; color: var(--text-main); border-bottom-left-radius: 2px; border: 1px solid var(--border); }
-.chat-input-area { padding: 1rem; background: #fff; border-top: 1px solid var(--border); display: flex; gap: 10px; }
-input[type=text] { flex: 1; border: 1px solid var(--border); border-radius: 10px; padding: 12px 16px; outline: none; font-size: 14px; transition: border 0.2s; }
-input[type=text]:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1); }
-.btn-send { background: var(--primary); color: #fff; border: none; border-radius: 10px; width: 44px; height: 44px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: background 0.2s; }
-.btn-send:hover { background: var(--primary-dark); }
-
-/* Calculator UI */
-.calc-container { display: grid; grid-template-columns: 1.5fr 1fr; gap: 1.5rem; }
-.calc-main { background: #1e293b; border-radius: var(--radius); padding: 1.5rem; box-shadow: var(--shadow); color: #fff; }
-.calc-screen { background: #0f172a; border-radius: 8px; padding: 20px; text-align: right; margin-bottom: 20px; border: 1px solid #334155; }
-.calc-expr { font-size: 14px; color: #94a3b8; min-height: 20px; margin-bottom: 4px; }
-.calc-res { font-size: 32px; font-weight: 700; color: #fff; overflow: hidden; }
-.calc-keys { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
-.k { border: none; border-radius: 8px; padding: 15px 5px; font-size: 16px; font-weight: 600; cursor: pointer; transition: all 0.1s; background: #334155; color: #fff; }
-.k:hover { background: #475569; }
-.k.op { background: var(--primary); color: #fff; }
-.k.op:hover { background: var(--primary-dark); }
-.k.fn { background: #475569; font-size: 13px; color: #cbd5e1; }
-.k.clr { background: #ef4444; }
-
-@media (max-width: 768px) {
-  .nav-btn span { display: none; }
-  .calc-container { grid-template-columns: 1fr; }
-  .topbar { padding: 0 1rem; }
-  .content { padding: 1.5rem 1rem; }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StatMate — University of Hargeisa</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #ffffff; color: #1a1a1a; }
+        .nav-active { color: #185FA5; border-bottom: 2px solid #185FA5; }
+        .sem-active { background-color: #e6f1fb; color: #185FA5; font-weight: 600; }
+        .calc-btn { background: #f8fafc; border: 1px solid #e2e8f0; transition: all 0.1s; }
+        .calc-btn:hover { background: #f1f5f9; }
+        iframe { border: 1px solid #e2e8f0; border-radius: 8px; }
+    </style>
 </head>
-<body>
+<body class="min-h-screen flex flex-col">
 
-<div class="topbar">
-  <a class="logo" href="#">
-    <div class="logo-icon">S</div>
-    StatMate
-  </a>
-  <nav class="nav">
-    <button class="nav-btn active" onclick="showPanel('drive')" id="tab-drive">
-      <i class="ti ti-folders"></i><span>Drive</span>
-    </button>
-    <button class="nav-btn" onclick="showPanel('reader')" id="tab-reader">
-      <i class="ti ti-book-2"></i><span>Reader</span>
-    </button>
-    <button class="nav-btn" onclick="showPanel('tutor')" id="tab-tutor">
-      <i class="ti ti-sparkles"></i><span>AI Tutor</span>
-    </button>
-    <button class="nav-btn" onclick="showPanel('calc')" id="tab-calc">
-      <i class="ti ti-calculator"></i><span>Calculator</span>
-    </button>
-  </nav>
-</div>
-
-<div class="content">
-
-  <!-- DRIVE PANEL -->
-  <div class="panel active" id="panel-drive">
-    <div class="section-header">
-      <div>
-        <div class="section-title">University Resources</div>
-        <div id="conn-status" style="font-size:12px; color:var(--text-muted); margin-top:4px;">
-          <i class="ti ti-circle-filled" style="color:#10b981; font-size:8px;"></i> Connected to UoH Library
+    <header class="px-8 py-6 border-b border-gray-100">
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-10 h-10 bg-[#185FA5] rounded-lg flex items-center justify-center text-white font-bold text-xl">S</div>
+            <div>
+                <h1 class="text-2xl font-semibold tracking-tight">StatMate <span class="text-gray-400 font-normal text-sm ml-2">· University of Hargeisa</span></h1>
+            </div>
         </div>
-      </div>
-      <select id="year-filter" onchange="filterFiles()" style="padding:8px; border-radius:8px; border:1px solid var(--border); font-size:13px; outline:none;">
-        <option value="">All Materials</option>
-        <option>Year 3 Semester 2</option>
-        <option>Biostatistics</option>
-        <option>Data Computing</option>
-      </select>
-    </div>
-    
-    <div id="file-grid" class="file-grid">
-      <!-- Files loaded via JavaScript -->
-    </div>
-  </div>
 
-  <!-- READER PANEL -->
-  <div class="panel" id="panel-reader">
-    <div class="section-header">
-      <div class="section-title"><i class="ti ti-book-2"></i> Study Reader</div>
-      <button class="btn" onclick="showPanel('drive')"><i class="ti ti-arrow-left"></i> Back to Drive</button>
-    </div>
-    <div class="card" style="padding:10px; display:flex; gap:10px; align-items:center;">
-      <select id="reader-select" onchange="loadReader()" style="flex:1; padding:10px; border:none; outline:none; font-size:14px;"></select>
-    </div>
-    <div id="reader-area" style="height:700px; border-radius:var(--radius); overflow:hidden; border:1px solid var(--border); background:#e2e8f0; display:flex; align-items:center; justify-content:center;">
-       <div style="text-align:center; color:var(--text-muted);">
-         <i class="ti ti-file-search" style="font-size:48px; margin-bottom:10px;"></i>
-         <p>Select a document to begin reading</p>
-       </div>
-    </div>
-  </div>
+        <nav class="flex gap-10">
+            <button onclick="showTab('library')" id="btn-library" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all nav-active">Library</button>
+            <button onclick="showTab('viewer')" id="btn-viewer" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">Document Viewer</button>
+            <button onclick="showTab('ai')" id="btn-ai" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">AI Assistant</button>
+            <button onclick="showTab('calc')" id="btn-calc" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">Calculator</button>
+            <button onclick="showTab('tables')" id="btn-tables" class="pb-2 text-gray-500 hover:text-[#185FA5] transition-all">Stat Tables</button>
+        </nav>
+    </header>
 
-  <!-- AI TUTOR PANEL -->
-  <div class="panel" id="panel-tutor">
-    <div class="section-header">
-      <div class="section-title"><i class="ti ti-sparkles"></i> AI Statistics Tutor</div>
-    </div>
-    <div class="chat-container">
-      <div class="chat-messages" id="chat-msgs">
-        <div class="message ai">Welcome, Abdihafid! I am calibrated for your UoH Year 3 curriculum. How can I help with your statistics or R programming today? 📈</div>
-      </div>
-      <div class="chat-input-area">
-        <input type="text" id="chat-input" placeholder="Ask about p-values, ANOVA, or R code..." onkeydown="if(event.key==='Enter')sendChat()">
-        <button class="btn-send" onclick="sendChat()"><i class="ti ti-send"></i></button>
-      </div>
-    </div>
-  </div>
+    <main class="flex-1 p-8 max-w-7xl mx-auto w-full">
+        
+        <div id="tab-library" class="tab-content">
+            <div class="flex flex-col gap-6">
+                <div class="flex items-center gap-4 text-sm">
+                    <input type="text" id="file-search" placeholder="Search files..." class="border-none bg-transparent outline-none w-64" oninput="filterFiles()">
+                </div>
 
-  <!-- CALCULATOR PANEL -->
-  <div class="panel" id="panel-calc">
-    <div class="section-header"><div class="section-title">Statistical Computing</div></div>
-    <div class="calc-container">
-      <div class="calc-main">
-        <div class="calc-screen">
-          <div class="calc-expr" id="calc-expr"></div>
-          <div class="calc-res" id="calc-val">0</div>
+                <div class="flex items-center gap-4 py-4 border-y border-gray-50">
+                    <span class="text-gray-500">Upload to:</span>
+                    <select id="upload-sem" class="outline-none bg-transparent cursor-pointer">
+                        <option>Semester 1</option><option>Semester 2</option><option>Semester 3</option><option>Semester 4</option>
+                    </select>
+                    <select id="upload-course" class="outline-none bg-transparent cursor-pointer font-medium">
+                        <option>Introduction to Statistics</option><option>Calculus I</option><option>Biostatistics</option>
+                    </select>
+                    <button class="ml-4 px-6 py-2 border border-[#185FA5] text-[#185FA5] rounded-md hover:bg-blue-50 transition-colors">Upload files</button>
+                </div>
+
+                <div class="grid grid-cols-[200px_1fr] gap-12 mt-4">
+                    <aside class="flex flex-col gap-1">
+                        <h3 class="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-2">Semesters</h3>
+                        <button onclick="setSemester(1)" id="sem-1" class="text-left px-3 py-2 rounded-md text-sm sem-active">Semester 1</button>
+                        <button onclick="setSemester(2)" id="sem-2" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 2</button>
+                        <button onclick="setSemester(3)" id="sem-3" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 3</button>
+                        <button onclick="setSemester(4)" id="sem-4" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 4</button>
+                        <button onclick="setSemester(5)" id="sem-5" class="text-left px-3 py-2 rounded-md text-sm text-gray-600 hover:bg-gray-50">Semester 5</button>
+                    </aside>
+
+                    <section>
+                        <h2 class="text-lg font-medium mb-6" id="semester-title">Semester 1 — Courses</h2>
+                        <div id="course-list" class="space-y-8">
+                            </div>
+                    </section>
+                </div>
+            </div>
         </div>
-        <div class="calc-keys">
-          <button class="k fn" onclick="calcFn('Math.sin(')">sin</button>
-          <button class="k fn" onclick="calcFn('Math.cos(')">cos</button>
-          <button class="k fn" onclick="calcFn('Math.sqrt(')">√</button>
-          <button class="k clr" onclick="calcClear()">AC</button>
-          
-          <button class="k" onclick="calcNum('7')">7</button>
-          <button class="k" onclick="calcNum('8')">8</button>
-          <button class="k" onclick="calcNum('9')">9</button>
-          <button class="k op" onclick="calcOp('/')">÷</button>
-          
-          <button class="k" onclick="calcNum('4')">4</button>
-          <button class="k" onclick="calcNum('5')">5</button>
-          <button class="k" onclick="calcNum('6')">6</button>
-          <button class="k op" onclick="calcOp('*')">×</button>
-          
-          <button class="k" onclick="calcNum('1')">1</button>
-          <button class="k" onclick="calcNum('2')">2</button>
-          <button class="k" onclick="calcNum('3')">3</button>
-          <button class="k op" onclick="calcOp('-')">−</button>
-          
-          <button class="k" onclick="calcNum('0')">0</button>
-          <button class="k" onclick="calcNum('.')">.</button>
-          <button class="k op" onclick="calcOp('+')">+</button>
-          <button class="k op" onclick="calcEquals()">=</button>
+
+        <div id="tab-viewer" class="tab-content hidden h-[700px]">
+            <div id="viewer-container" class="w-full h-full flex items-center justify-center bg-gray-50 rounded-xl text-gray-400">
+                <p>Select a file from the Library to view</p>
+            </div>
         </div>
-      </div>
-      <div class="card">
-        <div style="font-weight:700; margin-bottom:1rem; font-size:14px;">Computation History</div>
-        <div id="calc-history" style="font-size:13px; color:var(--text-muted);">
-          No recent calculations.
+
+        <div id="tab-ai" class="tab-content hidden max-w-3xl mx-auto">
+            <div class="bg-white border border-gray-100 rounded-xl shadow-sm overflow-hidden flex flex-col h-[600px]">
+                <div id="ai-messages" class="flex-1 p-6 overflow-y-auto space-y-4 bg-slate-50/50">
+                    <div class="bg-white border border-gray-100 p-4 rounded-lg text-sm text-gray-700 max-w-[80%]">
+                        Hi! I'm your StatMate AI. Ask me anything about your statistics coursework or research methods.
+                    </div>
+                </div>
+                <div class="p-4 border-t border-gray-100 flex gap-3">
+                    <input type="text" id="ai-input" placeholder="Ask a question..." class="flex-1 outline-none text-sm" onkeydown="if(event.key==='Enter')sendChat()">
+                    <button onclick="sendChat()" class="bg-[#185FA5] text-white px-4 py-2 rounded-lg text-sm">Send</button>
+                </div>
+            </div>
         </div>
-      </div>
-    </div>
-  </div>
 
-</div>
+        <div id="tab-calc" class="tab-content hidden">
+            <div class="max-w-md mx-auto bg-slate-900 p-6 rounded-2xl shadow-xl text-white">
+                <div class="text-right mb-4">
+                    <div id="calc-expr" class="text-xs text-slate-500 h-4"></div>
+                    <div id="calc-display" class="text-3xl font-light">0</div>
+                </div>
+                <div class="grid grid-cols-4 gap-2">
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg bg-red-100" onclick="calcClear()">AC</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('/')">÷</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('*')">×</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('-')">−</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('7')">7</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('8')">8</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('9')">9</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcOp('+')">+</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('4')">4</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('5')">5</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('6')">6</button>
+                    <button class="calc-btn text-white p-4 rounded-lg bg-[#185FA5] row-span-2" onclick="calcEquals()">=</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('1')">1</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('2')">2</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('3')">3</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg col-span-2" onclick="calcNum('0')">0</button>
+                    <button class="calc-btn text-slate-900 p-4 rounded-lg" onclick="calcNum('.')">.</button>
+                </div>
+            </div>
+        </div>
 
-<script>
-const SUPA_URL = 'https://dedyworlrfalwoujwkyx.supabase.co';
-const SUPA_KEY = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
-const BUCKET = 'course-materials';
-const GEMINI_KEY = 'AIzaSyDtZVpDaz54wVBAjZnHCnO_-Ex8b9q5bCE';
-const hdrs = {'apikey':SUPA_KEY,'Authorization':'Bearer '+SUPA_KEY};
+        <div id="tab-tables" class="tab-content hidden">
+            <div class="max-w-2xl mx-auto p-8 border border-gray-100 rounded-2xl bg-gray-50/30">
+                <h2 class="text-xl font-medium mb-6 text-center">Statistical Critical Value Lookup</h2>
+                <div class="grid grid-cols-2 gap-6">
+                    <div class="space-y-4">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Test Type</label>
+                        <select id="table-type" class="w-full p-3 rounded-lg border border-gray-100 outline-none">
+                            <option value="z">Z-Distribution</option>
+                            <option value="t">T-Distribution</option>
+                            <option value="f">F-Distribution</option>
+                        </select>
+                    </div>
+                    <div class="space-y-4">
+                        <label class="block text-xs font-bold text-gray-400 uppercase">Alpha (α)</label>
+                        <select id="table-alpha" class="w-full p-3 rounded-lg border border-gray-100 outline-none">
+                            <option value="0.05">0.05 (95%)</option>
+                            <option value="0.01">0.01 (99%)</option>
+                            <option value="0.1">0.10 (90%)</option>
+                        </select>
+                    </div>
+                </div>
+                <button onclick="calculateTable()" class="w-full mt-8 bg-[#185FA5] text-white p-4 rounded-xl font-medium">Find Critical Value</button>
+                <div id="table-result" class="mt-8 text-center text-4xl font-bold text-[#185FA5]"></div>
+            </div>
+        </div>
 
-let allFiles = [];
+    </main>
 
-function showPanel(name) {
-  document.querySelectorAll('.panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-'+name).classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
-}
+    <script>
+        // CONFIGURATION
+        const SUPA_URL = 'https://dedyworlrfalwoujwkyx.supabase.co';
+        const SUPA_KEY = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
+        const BUCKET = 'course-materials';
+        const GEMINI_KEY = 'AIzaSyDtZVpDaz54wVBAjZnHCnO_-Ex8b9q5bCE';
 
-async function loadFiles() {
-  try {
-    const r = await fetch(`${SUPA_URL}/storage/v1/object/list/${BUCKET}`, {
-      method:'POST',
-      headers:{...hdrs,'Content-Type':'application/json'},
-      body:JSON.stringify({prefix:'',limit:100,offset:0})
-    });
-    const data = await r.json();
-    allFiles = data.filter(f => f.name && !f.name.endsWith('/'));
-    renderFiles(allFiles);
-    populateReaderSelect(allFiles);
-  } catch(e) { console.error("Data error", e); }
-}
+        const SEMESTERS = {
+            1: ["Introduction to Statistics", "Calculus I", "Computer Fundamentals"],
+            2: ["Probability Theory", "Calculus II", "Linear Algebra"],
+            3: ["Statistical Inference", "Econometrics", "Sampling Methods"]
+        };
 
-function renderFiles(files) {
-  const grid = document.getElementById('file-grid');
-  grid.innerHTML = files.map(f => `
-    <div class="file-card" onclick="openInReader('${f.name}')">
-      <div class="file-icon"><i class="ti ti-file-text"></i></div>
-      <div class="file-info">
-        <div class="file-name">${f.name}</div>
-        <div class="file-meta">Click to Open</div>
-      </div>
-      <i class="ti ti-chevron-right" style="color:#cbd5e1"></i>
-    </div>
-  `).join('');
-}
+        // UI STATE
+        function showTab(id) {
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.add('hidden'));
+            document.getElementById('tab-' + id).classList.remove('hidden');
+            document.querySelectorAll('nav button').forEach(b => b.classList.remove('nav-active'));
+            document.getElementById('btn-' + id).classList.add('nav-active');
+        }
 
-function filterFiles() {
-  const val = document.getElementById('year-filter').value.toLowerCase();
-  const filtered = allFiles.filter(f => f.name.toLowerCase().includes(val));
-  renderFiles(filtered);
-}
+        function setSemester(num) {
+            document.querySelectorAll('aside button').forEach(b => b.classList.remove('sem-active'));
+            document.getElementById('sem-' + num).classList.add('sem-active');
+            document.getElementById('semester-title').innerText = `Semester ${num} — Courses`;
+            renderCourses(num);
+        }
 
-function openInReader(name) {
-  showPanel('reader');
-  document.getElementById('reader-select').value = name;
-  loadReader();
-}
+        async function renderCourses(semNum) {
+            const list = document.getElementById('course-list');
+            list.innerHTML = '<div class="text-gray-400 animate-pulse">Loading library data...</div>';
+            
+            // Fetch real data from Supabase
+            const files = await fetchFiles();
+            
+            const courses = SEMESTERS[semNum] || ["General Materials"];
+            list.innerHTML = courses.map(course => {
+                const courseFiles = files.filter(f => f.name.includes(course));
+                return `
+                    <div class="group">
+                        <div class="flex items-baseline justify-between mb-2">
+                            <h3 class="font-medium text-gray-800">${course}</h3>
+                            <span class="text-[10px] text-gray-400 font-bold uppercase">${courseFiles.length} files</span>
+                        </div>
+                        <div class="space-y-1">
+                            ${courseFiles.length > 0 ? courseFiles.map(f => `
+                                <div onclick="viewFile('${f.name}')" class="flex items-center justify-between py-2 px-3 rounded-md hover:bg-gray-50 cursor-pointer transition-all">
+                                    <div class="flex items-center gap-3">
+                                        <i class="ti ti-file-text text-[#185FA5]"></i>
+                                        <span class="text-sm text-gray-600">${f.name}</span>
+                                    </div>
+                                    <i class="ti ti-chevron-right text-gray-300 opacity-0 group-hover:opacity-100"></i>
+                                </div>
+                            `).join('') : '<p class="text-xs text-gray-300 italic">No files uploaded yet</p>'}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
 
-function populateReaderSelect(files) {
-  const sel = document.getElementById('reader-select');
-  sel.innerHTML = '<option value="">Choose a file to view...</option>' + 
-    files.map(f => `<option value="${f.name}">${f.name}</option>`).join('');
-}
+        async function fetchFiles() {
+            try {
+                const r = await fetch(`${SUPA_URL}/storage/v1/object/list/${BUCKET}`, {
+                    method: 'POST',
+                    headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ prefix: '', limit: 100 })
+                });
+                return await r.json();
+            } catch (e) { return []; }
+        }
 
-function loadReader() {
-  const name = document.getElementById('reader-select').value;
-  if(!name) return;
-  const url = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${encodeURIComponent(name)}`;
-  const area = document.getElementById('reader-area');
-  area.innerHTML = `<iframe src="${url}" style="width:100%; height:100%; border:none;"></iframe>`;
-}
+        function viewFile(name) {
+            const url = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${encodeURIComponent(name)}`;
+            document.getElementById('viewer-container').innerHTML = `<iframe src="${url}" class="w-full h-full"></iframe>`;
+            showTab('viewer');
+        }
 
-// AI TUTOR LOGIC
-let chatHistory = [];
-async function sendChat() {
-  const inp = document.getElementById('chat-input');
-  const msg = inp.value.trim();
-  if(!msg) return;
-  
-  inp.value = '';
-  appendMsg(msg, 'user');
-  chatHistory.push({role:'user', parts:[{text:msg}]});
-  
-  const loadingMsg = appendMsg('Analyzing...', 'ai');
-  
-  try {
-    const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
-      method:'POST',
-      headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({
-        contents: chatHistory,
-        systemInstruction: { parts: [{ text: "You are StatMate, a tutor for Abdihafid at UoH. Focus on Year 3 Statistics and R Programming." }] }
-      })
-    });
-    const data = await res.json();
-    const reply = data.candidates[0].content.parts[0].text;
-    loadingMsg.textContent = reply;
-    chatHistory.push({role:'model', parts:[{text:reply}]});
-  } catch(e) { loadingMsg.textContent = "Error connecting to AI. Try again."; }
-}
+        // AI ASSISTANT
+        async function sendChat() {
+            const input = document.getElementById('ai-input');
+            const box = document.getElementById('ai-messages');
+            if(!input.value.trim()) return;
 
-function appendMsg(text, cls) {
-  const div = document.createElement('div');
-  div.className = `message ${cls}`;
-  div.textContent = text;
-  const chat = document.getElementById('chat-msgs');
-  chat.appendChild(div);
-  chat.scrollTop = chat.scrollHeight;
-  return div;
-}
+            const userText = input.value;
+            input.value = '';
+            box.innerHTML += `<div class="bg-[#185FA5] text-white p-4 rounded-lg text-sm self-end max-w-[80%] ml-auto">${userText}</div>`;
 
-// CALCULATOR LOGIC
-let expr = '';
-function calcNum(n) { expr += n; updateCalc(); }
-function calcOp(o) { expr += o; updateCalc(); }
-function calcFn(f) { expr += f; updateCalc(); }
-function calcClear() { expr = ''; updateCalc(); }
-function updateCalc() { 
-  document.getElementById('calc-expr').textContent = expr;
-  document.getElementById('calc-val').textContent = expr || '0';
-}
-function calcEquals() {
-  try {
-    const res = eval(expr);
-    const row = document.createElement('div');
-    row.style.marginBottom = "8px";
-    row.innerHTML = `<div style="color:#94a3b8">${expr}</div><div>= ${res}</div>`;
-    const hist = document.getElementById('calc-history');
-    if(hist.innerText.includes('No recent')) hist.innerHTML = '';
-    hist.prepend(row);
-    expr = res.toString();
-    updateCalc();
-  } catch(e) { document.getElementById('calc-val').textContent = "Error"; expr = ''; }
-}
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${GEMINI_KEY}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: userText }] }] })
+                });
+                const data = await res.json();
+                const reply = data.candidates[0].content.parts[0].text;
+                box.innerHTML += `<div class="bg-white border border-gray-100 p-4 rounded-lg text-sm text-gray-700 max-w-[80%]">${reply}</div>`;
+                box.scrollTop = box.scrollHeight;
+            } catch (e) {
+                box.innerHTML += `<div class="text-red-500 text-xs p-2">Connection error.</div>`;
+            }
+        }
 
-loadFiles();
-</script>
+        // CALCULATOR LOGIC
+        let expr = '';
+        function calcNum(n) { expr += n; updateCalc(); }
+        function calcOp(o) { expr += o; updateCalc(); }
+        function calcClear() { expr = ''; updateCalc(); }
+        function updateCalc() { document.getElementById('calc-display').innerText = expr || '0'; }
+        function calcEquals() { try { expr = eval(expr).toString(); updateCalc(); } catch(e) { expr = 'Error'; updateCalc(); expr = ''; } }
+
+        function calculateTable() {
+            const val = document.getElementById('table-type').value === 'z' ? '1.960' : '2.228'; // Mock logic for design
+            document.getElementById('table-result').innerText = val;
+        }
+
+        // INITIALIZE
+        setSemester(1);
+    </script>
 </body>
 </html>
