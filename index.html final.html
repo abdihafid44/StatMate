@@ -144,7 +144,7 @@
         </main>
     </div>
 
-    <script>
+   <script>
         // --- 1. SYSTEM CONFIGURATION ---
         const SUPA_URL = 'https://dedyworlrfalwoujwkyx.supabase.co';
         const SUPA_KEY = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
@@ -183,13 +183,16 @@
             const grid = document.getElementById('course-grid');
             grid.innerHTML = '<div class="text-gray-400 italic animate-pulse">Syncing library with Supabase...</div>';
             
-            // Fetch files dynamically from the selected 'Semester X/' folder
             const files = await fetchFiles(semNum);
             const semesterCourses = CURRICULUM[semNum] || ["General Materials"];
 
             grid.innerHTML = semesterCourses.map(course => {
-                // Find files for this specific course. Exclude folders themselves (which end in '/') or empty placeholders
-                const courseFiles = files.filter(f => f.name.toLowerCase().includes(course.toLowerCase()) && !f.name.endsWith('/') && !f.name.includes('.emptyFolder'));
+                // BUG FIX 1: Force the code to only look for files INSIDE the folder by checking for the slash
+                const coursePrefix = course.toLowerCase() + '/';
+                const courseFiles = files.filter(f => 
+                    f.name.toLowerCase().startsWith(coursePrefix) && 
+                    !f.name.includes('.emptyFolder')
+                );
                 
                 return `
                     <div class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
@@ -204,8 +207,10 @@
                         </div>
                         <div class="space-y-1">
                             ${courseFiles.length > 0 ? courseFiles.map(f => {
-                                // Create a safe file path for the onclick event to prevent quotes from breaking the HTML
-                                const safePathArg = f.name.replace(/'/g, "\\'");
+                                // BUG FIX 2: Ensure the "Semester X/" part is included in the final web link
+                                const fullPath = 'Semester ' + semNum + '/' + f.name;
+                                const safePathArg = fullPath.replace(/'/g, "\\'");
+                                
                                 return `
                                 <div onclick="openReader('${safePathArg}')" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 cursor-pointer group/item transition-all border border-transparent hover:border-slate-200">
                                     <div class="flex items-center gap-3">
@@ -214,7 +219,8 @@
                                     </div>
                                     <i class="ti ti-chevron-right text-gray-300 opacity-0 group-hover/item:opacity-100 transition-all"></i>
                                 </div>
-                            `}).join('') : '<p class="text-[11px] text-gray-400 italic px-3 py-2 bg-gray-50/50 rounded-lg">No resources uploaded to this folder yet.</p>'}
+                                `
+                            }).join('') : '<p class="text-[11px] text-gray-400 italic px-3 py-2 bg-gray-50/50 rounded-lg">No resources uploaded to this folder yet.</p>'}
                         </div>
                     </div>
                 `;
@@ -226,7 +232,6 @@
                 const r = await fetch(`${SUPA_URL}/storage/v1/object/list/${BUCKET}`, {
                     method: 'POST',
                     headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' },
-                    // Look inside the specific semester folder
                     body: JSON.stringify({ prefix: `Semester ${semNum}/`, limit: 100 })
                 });
                 return await r.json();
@@ -265,7 +270,6 @@
             const text = input.value;
             input.value = '';
             
-            // User Message
             box.innerHTML += `
                 <div class="flex gap-4 justify-end">
                     <div class="bg-[#185FA5] text-white p-5 rounded-2xl rounded-tr-none text-sm max-w-[85%] shadow-sm leading-relaxed">${text}</div>
@@ -281,7 +285,6 @@
                 const data = await res.json();
                 const reply = data.candidates[0].content.parts[0].text;
                 
-                // AI Response
                 box.innerHTML += `
                     <div class="flex gap-4">
                         <div class="w-8 h-8 bg-blue-50 text-[#185FA5] rounded-lg flex items-center justify-center text-xs font-bold shrink-0 border border-blue-100">SM</div>
@@ -301,7 +304,6 @@
         function updateCalc() { document.getElementById('calc-display').innerText = expr || '0'; }
         function calcEquals() { 
             try { 
-                // Basic eval for simple calculator operations
                 expr = eval(expr).toString(); 
                 updateCalc(); 
             } catch(e) { 
@@ -321,7 +323,6 @@
         }
 
         // --- 8. INITIALIZE APP ---
-        // Default to Semester 6 when the app opens
         setSemester(6); 
     </script>
 </body>
