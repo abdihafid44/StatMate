@@ -151,7 +151,7 @@
         const BUCKET = 'course-materials';
         const GEMINI_KEY = 'AIzaSyDtZVpDaz54wVBAjZnHCnO_-Ex8b9q5bCE';
 
-        // Add subjects to the semesters as you build your curriculum
+        // Curriculum mapping
         const CURRICULUM = {
             1: ["Introduction to Statistics", "Calculus I", "Computer Fundamentals", "Academic Writing"],
             2: ["Probability Theory", "Calculus II", "Linear Algebra I", "Research Methods"],
@@ -172,14 +172,9 @@
         }
 
         function setSemester(num) {
-            // Update Sidebar UI
             document.querySelectorAll('#sem-nav button').forEach(b => b.classList.remove('sem-active'));
             document.getElementById('sem-' + num).classList.add('sem-active');
-            
-            // Update Main Title
             document.getElementById('current-sem-title').innerText = `Semester ${num} — Courses`;
-            
-            // Render the specific courses for this semester
             renderCourses(num);
         }
 
@@ -188,13 +183,13 @@
             const grid = document.getElementById('course-grid');
             grid.innerHTML = '<div class="text-gray-400 italic animate-pulse">Syncing library with Supabase...</div>';
             
-            // Fetch files dynamically from the 'Semester X/' folder
+            // Fetch files dynamically from the selected 'Semester X/' folder
             const files = await fetchFiles(semNum);
             const semesterCourses = CURRICULUM[semNum] || ["General Materials"];
 
             grid.innerHTML = semesterCourses.map(course => {
-                // Find files for this specific course, and exclude empty folder placeholders
-                const courseFiles = files.filter(f => f.name.toLowerCase().includes(course.toLowerCase()) && !f.name.endsWith('/'));
+                // Find files for this specific course. Exclude folders themselves (which end in '/') or empty placeholders
+                const courseFiles = files.filter(f => f.name.toLowerCase().includes(course.toLowerCase()) && !f.name.endsWith('/') && !f.name.includes('.emptyFolder'));
                 
                 return `
                     <div class="group bg-white p-6 rounded-3xl border border-slate-100 shadow-sm hover:shadow-md transition-shadow">
@@ -208,15 +203,18 @@
                             <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider bg-gray-50 px-2 py-1 rounded-md">${courseFiles.length} files</span>
                         </div>
                         <div class="space-y-1">
-                            ${courseFiles.length > 0 ? courseFiles.map(f => `
-                                <div onclick="openReader('${f.name}')" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 cursor-pointer group/item transition-all border border-transparent hover:border-slate-200">
+                            ${courseFiles.length > 0 ? courseFiles.map(f => {
+                                // Create a safe file path for the onclick event to prevent quotes from breaking the HTML
+                                const safePathArg = f.name.replace(/'/g, "\\'");
+                                return `
+                                <div onclick="openReader('${safePathArg}')" class="flex items-center justify-between p-3 rounded-xl hover:bg-slate-50 cursor-pointer group/item transition-all border border-transparent hover:border-slate-200">
                                     <div class="flex items-center gap-3">
                                         <i class="ti ti-file-text text-[#185FA5] text-lg"></i>
                                         <span class="text-sm text-slate-700 font-medium truncate max-w-[250px]">${f.name.split('/').pop()}</span>
                                     </div>
                                     <i class="ti ti-chevron-right text-gray-300 opacity-0 group-hover/item:opacity-100 transition-all"></i>
                                 </div>
-                            `).join('') : '<p class="text-[11px] text-gray-400 italic px-3 py-2 bg-gray-50/50 rounded-lg">No resources uploaded to this folder yet.</p>'}
+                            `}).join('') : '<p class="text-[11px] text-gray-400 italic px-3 py-2 bg-gray-50/50 rounded-lg">No resources uploaded to this folder yet.</p>'}
                         </div>
                     </div>
                 `;
