@@ -256,7 +256,7 @@
 const SUPA_URL   = 'https://dedyworlrfalwoujwkyx.supabase.co';
 const SUPA_KEY   = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
 const BUCKET     = 'course-materials';
-const GEMINI_KEY = 'AIzaSyA9kwH9SxZfywhSzXXLyZFv_1k91el4VuA';
+const OPENROUTER_KEY = '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';
 
 // ── CURRICULUM MAP ───────────────────────────────────────────────────────────
 // KEY = folder name in Supabase exactly as created
@@ -458,7 +458,7 @@ async function sendChat() {
     if (!text) return;
     input.value = '';
     appendMsg('user', text.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
-    chatHistory.push({ role: 'user', parts: [{ text }] });
+    chatHistory.push({ role: 'user', content: text });
 
     const box = document.getElementById('ai-messages');
     const thinkEl = document.createElement('div');
@@ -471,17 +471,25 @@ async function sendChat() {
     const systemText = `You are StatMate AI, a statistics tutor for University of Hargeisa (UoH) students. The student is currently viewing ${sem.label}. Courses this semester: ${sem.courses.join(', ')||'various'}. Specialise in statistics, R programming, biostatistics, research methods and data analysis. Give clear, practical answers. For R code always provide working commented examples. Be encouraging.`;
 
     try {
-        const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`, {
+        const res = await fetch('https://openrouter.ai/api/v1/chat/completions', {
             method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${OPENROUTER_KEY}`,
+                'HTTP-Referer': 'https://stat-mate-ecru.vercel.app',
+                'X-Title': 'StatMate UoH'
+            },
             body: JSON.stringify({
-                system_instruction: { parts: [{ text: systemText }] },
-                contents: chatHistory
+                model: 'meta-llama/llama-3.1-8b-instruct:free',
+                messages: [
+                    { role: 'system', content: systemText },
+                    ...chatHistory
+                ]
             })
         });
         const data = await res.json();
-        const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || 'Sorry, no response. Please try again.';
-        chatHistory.push({ role: 'model', parts: [{ text: reply }] });
+        const reply = data.choices?.[0]?.message?.content || 'Sorry, no response. Please try again.';
+        chatHistory.push({ role: 'assistant', content: reply });
         thinkEl.remove();
         appendMsg('bot', fmt(reply));
     } catch {
