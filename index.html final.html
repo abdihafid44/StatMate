@@ -1,1031 +1,530 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>StatMate — University of Hargeisa</title>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css" />
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet" />
-  <style>
-    :root {
-      --blue: #185FA5;
-      --blue-light: #e6f1fb;
-      --blue-mid: #d0e7f8;
-      --sidebar-w: 210px;
-      --header-h: 108px;
-    }
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    body { font-family: 'DM Sans', -apple-system, sans-serif; background: #f7f9fc; color: #1a1a2e; }
-
-    /* ── HEADER ── */
-    header {
-      background: #fff;
-      border-bottom: 1px solid #eef0f4;
-      padding: 0 2rem;
-      position: sticky; top: 0; z-index: 50;
-    }
-    .header-top {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 1rem 0 .75rem;
-    }
-    .logo { display: flex; align-items: center; gap: .75rem; }
-    .logo-icon {
-      width: 38px; height: 38px; background: var(--blue); border-radius: 10px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-weight: 800; font-size: 1rem;
-    }
-    .logo-text { font-size: 1.2rem; font-weight: 700; color: #111; }
-    .logo-sub  { font-size: .73rem; color: #9aa3b0; font-weight: 400; margin-left: .4rem; }
-    .live-badge {
-      font-size: .65rem; font-weight: 700; color: #16a34a;
-      background: #f0fdf4; border: 1px solid #bbf7d0;
-      padding: .3rem .8rem; border-radius: 999px;
-    }
-    nav { display: flex; border-top: 1px solid #f3f4f6; overflow-x: auto; }
-    .tab-btn {
-      padding: .8rem 1.2rem; font-size: .865rem; font-weight: 500; color: #7a8494;
-      border: none; background: none; cursor: pointer;
-      border-bottom: 2.5px solid transparent; transition: all .18s;
-      white-space: nowrap; font-family: 'DM Sans', sans-serif;
-      display: flex; align-items: center; gap: .4rem;
-    }
-    .tab-btn:hover { color: var(--blue); }
-    .tab-btn.active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
-
-    /* ── LAYOUT ── */
-    .app-body {
-      display: flex;
-      height: calc(100vh - var(--header-h));
-      overflow: hidden;
-    }
-
-    /* ── SIDEBAR ── */
-    aside {
-      width: var(--sidebar-w); min-width: var(--sidebar-w);
-      background: #fff; border-right: 1px solid #eef0f4;
-      overflow-y: auto; padding: 1.25rem .75rem;
-      display: flex; flex-direction: column; gap: .15rem;
-    }
-    .sidebar-label {
-      font-size: .62rem; font-weight: 700; color: #b0b8c4;
-      letter-spacing: .14em; text-transform: uppercase;
-      padding: .5rem 1rem .75rem;
-    }
-    .sem-btn {
-      display: flex; align-items: center; gap: .6rem;
-      padding: .65rem 1rem; border-radius: 10px;
-      border: none; background: none;
-      font-family: 'DM Sans', sans-serif; font-size: .84rem;
-      font-weight: 500; color: #6b7280; cursor: pointer;
-      transition: all .15s; text-align: left; width: 100%;
-      position: relative;
-    }
-    .sem-btn:hover { background: var(--blue-light); color: var(--blue); }
-    .sem-btn.active {
-      background: var(--blue-light); color: var(--blue);
-      font-weight: 600; border-left: 3px solid var(--blue);
-    }
-    .sem-badge {
-      margin-left: auto; background: var(--blue); color: #fff;
-      font-size: .62rem; font-weight: 700;
-      padding: .2rem .55rem; border-radius: 999px;
-    }
-
-    /* ── MAIN ── */
-    main { flex: 1; overflow-y: auto; padding: 2rem 2.5rem; }
-    .tab-panel { display: none; }
-    .tab-panel.active { display: block; }
-
-    /* ── LIBRARY ── */
-    .lib-header {
-      display: flex; align-items: flex-end;
-      justify-content: space-between; margin-bottom: 1.75rem;
-      flex-wrap: wrap; gap: 1rem;
-    }
-    .lib-title { font-size: 1.6rem; font-weight: 700; color: #0f172a; letter-spacing: -.4px; }
-    .lib-sub   { font-size: .82rem; color: #94a3b8; margin-top: .2rem; }
-    .search-box {
-      display: flex; align-items: center; gap: .6rem;
-      background: #fff; border: 1px solid #e2e8f0;
-      border-radius: 12px; padding: .55rem 1rem;
-      transition: border-color .2s;
-    }
-    .search-box:focus-within { border-color: var(--blue); }
-    .search-box input {
-      border: none; outline: none; font-size: .85rem;
-      font-family: 'DM Sans', sans-serif; color: #374151;
-      width: 180px; background: transparent;
-    }
-    .course-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(310px, 1fr));
-      gap: 1.1rem;
-    }
-    .course-card {
-      background: #fff; border-radius: 16px;
-      border: 1px solid #eef0f4; padding: 1.35rem;
-      transition: box-shadow .2s, transform .2s;
-    }
-    .course-card:hover { box-shadow: 0 6px 24px rgba(24,95,165,.09); transform: translateY(-1px); }
-    .card-head {
-      display: flex; align-items: center;
-      justify-content: space-between; margin-bottom: 1rem;
-    }
-    .card-icon-row { display: flex; align-items: center; gap: .7rem; }
-    .card-icon {
-      width: 40px; height: 40px; background: var(--blue-light);
-      border-radius: 11px; display: flex; align-items: center;
-      justify-content: center; color: var(--blue); font-size: 1.2rem; flex-shrink: 0;
-    }
-    .card-title { font-weight: 700; font-size: .93rem; color: #0f172a; }
-    .file-count {
-      font-size: .62rem; font-weight: 700; color: var(--blue);
-      background: var(--blue-light); padding: .28rem .65rem; border-radius: 999px;
-      flex-shrink: 0;
-    }
-    .file-row {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: .58rem .7rem; border-radius: 9px; cursor: pointer;
-      transition: background .15s; border: 1px solid transparent;
-    }
-    .file-row:hover { background: #f8fafc; border-color: #e2e8f0; }
-    .file-row-left { display: flex; align-items: center; gap: .6rem; min-width: 0; }
-    .file-name { font-size: .78rem; color: #475569; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .file-arrow { font-size: .82rem; color: #cbd5e1; transition: transform .15s, color .15s; }
-    .file-row:hover .file-arrow { transform: translateX(2px); color: var(--blue); }
-    .empty-msg { font-size: .75rem; color: #cbd5e1; font-style: italic; padding: .75rem; background: #fafafa; border-radius: 8px; }
-    .loading-block { grid-column: 1/-1; text-align: center; padding: 4rem; }
-    .spinner {
-      width: 30px; height: 30px; border: 2.5px solid #e2e8f0;
-      border-top-color: var(--blue); border-radius: 50%;
-      animation: spin .7s linear infinite; margin: 0 auto 1rem;
-    }
-    @keyframes spin { to { transform: rotate(360deg); } }
-
-    /* ── VIEWER ── */
-    .viewer-empty {
-      width: 100%; height: calc(100vh - var(--header-h) - 4rem);
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      background: #fff; border-radius: 16px;
-      border: 1px solid #eef0f4; color: #cbd5e1;
-    }
-    .viewer-empty i { font-size: 3rem; margin-bottom: 1rem; }
-    .viewer-empty p { font-size: .88rem; color: #94a3b8; }
-    .viewer-frame {
-      width: 100%;
-      height: calc(100vh - var(--header-h) - 4rem);
-      border-radius: 16px; border: 1px solid #eef0f4; overflow: hidden;
-    }
-
-    /* ── AI CHAT ── */
-    #panel-ai { max-width: 780px; }
-    .chat-shell {
-      background: #fff; border: 1px solid #eef0f4; border-radius: 22px;
-      box-shadow: 0 4px 30px rgba(0,0,0,.05);
-      display: flex; flex-direction: column; overflow: hidden; height: 630px;
-    }
-    .chat-hdr {
-      padding: 1.1rem 1.5rem; border-bottom: 1px solid #f3f4f6;
-      display: flex; align-items: center; gap: .7rem; background: #fafbfd;
-    }
-    .chat-av {
-      width: 36px; height: 36px; background: var(--blue); border-radius: 11px;
-      display: flex; align-items: center; justify-content: center;
-      color: #fff; font-size: .68rem; font-weight: 800;
-    }
-    .chat-name   { font-weight: 700; font-size: .92rem; color: #0f172a; }
-    .chat-status { font-size: .7rem; color: #16a34a; font-weight: 500; }
-    #ai-msgs {
-      flex: 1; overflow-y: auto; padding: 1.25rem;
-      display: flex; flex-direction: column; gap: 1.1rem;
-    }
-    .msg { display: flex; gap: .7rem; max-width: 88%; }
-    .msg.user { align-self: flex-end; flex-direction: row-reverse; }
-    .msg-av {
-      width: 32px; height: 32px; border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: .62rem; font-weight: 800; flex-shrink: 0;
-    }
-    .msg.bot  .msg-av { background: var(--blue-light); color: var(--blue); }
-    .msg.user .msg-av { background: var(--blue); color: #fff; }
-    .msg-bub {
-      padding: .85rem 1rem; border-radius: 14px;
-      font-size: .845rem; line-height: 1.65;
-    }
-    .msg.bot  .msg-bub {
-      background: #f8fafc; border: 1px solid #eef0f4; color: #334155;
-      border-top-left-radius: 4px;
-    }
-    .msg.user .msg-bub { background: var(--blue); color: #fff; border-top-right-radius: 4px; }
-    .msg-bub pre {
-      background: #1e293b; color: #e2e8f0; padding: .7rem .9rem;
-      border-radius: 8px; font-family: 'DM Mono', monospace;
-      font-size: .76rem; overflow-x: auto; margin: .5rem 0;
-    }
-    .msg-bub code {
-      font-family: 'DM Mono', monospace; font-size: .8em;
-      background: rgba(0,0,0,.06); padding: .1em .3em; border-radius: 4px;
-    }
-    .msg.user .msg-bub code { background: rgba(255,255,255,.2); }
-    .thinking {
-      display: flex; gap: 4px; padding: .85rem 1rem;
-      background: #f8fafc; border: 1px solid #eef0f4;
-      border-radius: 14px; border-top-left-radius: 4px;
-    }
-    .thinking span {
-      width: 7px; height: 7px; background: #cbd5e1;
-      border-radius: 50%; animation: bounce .9s infinite;
-    }
-    .thinking span:nth-child(2) { animation-delay: .15s; }
-    .thinking span:nth-child(3) { animation-delay: .3s; }
-    @keyframes bounce { 0%,60%,100%{transform:translateY(0)} 30%{transform:translateY(-5px)} }
-    .chat-input-row {
-      padding: .9rem 1.1rem; border-top: 1px solid #f3f4f6;
-      display: flex; gap: .7rem; align-items: center;
-    }
-    #ai-input {
-      flex: 1; padding: .8rem 1rem; border-radius: 13px;
-      border: 1.5px solid #e2e8f0;
-      font-family: 'DM Sans', sans-serif; font-size: .875rem;
-      outline: none; background: #f8fafc; transition: border-color .2s;
-    }
-    #ai-input:focus { border-color: var(--blue); background: #fff; }
-    .send-btn {
-      width: 46px; height: 46px; background: var(--blue); border: none;
-      border-radius: 13px; color: #fff; cursor: pointer;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1.1rem; transition: background .2s; flex-shrink: 0;
-    }
-    .send-btn:hover { background: #1254a0; }
-    .send-btn:disabled { opacity: .5; cursor: default; }
-
-    /* ── CALCULATOR ── */
-    #panel-calc { max-width: 400px; }
-    .calc-shell {
-      background: #0f172a; border-radius: 28px;
-      padding: 2.25rem;
-      box-shadow: 0 20px 60px rgba(0,0,0,.3);
-    }
-    .calc-display { text-align: right; padding: 0 .5rem 1.5rem; }
-    #calc-expr {
-      font-family: 'DM Mono', monospace; color: #64748b;
-      font-size: .78rem; min-height: 1.2rem; margin-bottom: .4rem;
-      overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-    }
-    #calc-main {
-      font-family: 'DM Mono', monospace; color: #fff;
-      font-size: 3.1rem; font-weight: 300; letter-spacing: -2px;
-      overflow: hidden; text-overflow: ellipsis;
-    }
-    .calc-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: .65rem; }
-    .cb {
-      padding: 1rem; border: none; border-radius: 12px;
-      cursor: pointer; font-family: 'DM Sans', sans-serif;
-      font-size: .95rem; font-weight: 600; transition: all .1s;
-    }
-    .cb:active { transform: scale(.93); }
-    .cb-num { background: #1e293b; color: #e2e8f0; }
-    .cb-num:hover { background: #273549; }
-    .cb-op  { background: #243044; color: #93c5fd; }
-    .cb-op:hover { background: #2e3d58; }
-    .cb-fn  { background: #1a2a3a; color: #94a3b8; font-size: .82rem; }
-    .cb-fn:hover { background: #243044; color: #e2e8f0; }
-    .cb-clr { background: rgba(239,68,68,.12); color: #f87171; }
-    .cb-clr:hover { background: rgba(239,68,68,.22); }
-    .cb-eq  { background: var(--blue); color: #fff; }
-    .cb-eq:hover { background: #1254a0; }
-    .cb-wide { grid-column: span 2; }
-
-    /* ── STAT TABLES ── */
-    #panel-tables { max-width: 560px; }
-    .tbl-shell {
-      background: #fff; border: 1px solid #eef0f4;
-      border-radius: 22px; padding: 2.5rem;
-    }
-    .tbl-title {
-      text-align: center; font-size: 1.4rem;
-      font-weight: 700; color: #0f172a; margin-bottom: 1.75rem;
-    }
-    .tbl-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
-    .tbl-tab {
-      padding: .6rem 1.1rem; border-radius: 10px;
-      font-size: .84rem; font-weight: 500;
-      border: 1px solid #e2e8f0; background: transparent;
-      color: #6b7280; cursor: pointer; font-family: 'DM Sans', sans-serif;
-      transition: all .15s;
-    }
-    .tbl-tab:hover { border-color: var(--blue); color: var(--blue); }
-    .tbl-tab.active { background: var(--blue-light); border-color: var(--blue); color: var(--blue); font-weight: 600; }
-    .field-label { font-size: .63rem; font-weight: 700; color: #9aa3b0; letter-spacing: .14em; text-transform: uppercase; display: block; margin-bottom: .5rem; }
-    .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
-    .tbl-select, .tbl-input {
-      width: 100%; padding: .8rem 1rem; border-radius: 12px;
-      border: 1.5px solid #e2e8f0; font-family: 'DM Sans', sans-serif;
-      font-size: .875rem; outline: none; background: #f8fafc;
-      color: #1a1a2e; transition: border-color .2s;
-    }
-    .tbl-select:focus, .tbl-input:focus { border-color: var(--blue); background: #fff; }
-    .lookup-btn {
-      width: 100%; padding: .95rem; background: var(--blue); color: #fff;
-      border: none; border-radius: 13px; font-family: 'DM Sans', sans-serif;
-      font-size: .92rem; font-weight: 700; cursor: pointer;
-      transition: background .2s; margin-top: .5rem;
-    }
-    .lookup-btn:hover { background: #1254a0; }
-    .result-box {
-      background: var(--blue-light); border: 1px solid var(--blue);
-      border-radius: 14px; padding: 1.5rem; text-align: center; margin-top: 1.5rem;
-    }
-    .result-label { font-size: .8rem; color: var(--blue); font-weight: 600; margin-bottom: .5rem; }
-    .result-val {
-      font-family: 'DM Mono', monospace; font-size: 3.5rem;
-      font-weight: 700; color: var(--blue); letter-spacing: -2px;
-    }
-
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width: 5px; }
-    ::-webkit-scrollbar-thumb { background: #dde3ec; border-radius: 10px; }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 700px) {
-      aside { display: none; }
-      main  { padding: 1.25rem; }
-      .course-grid { grid-template-columns: 1fr; }
-      #panel-calc { max-width: 100%; }
-      header { padding: 0 1rem; }
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>StatMate — UoH Full Curriculum Workspace</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root { --blue: #185FA5; --blue-light: #e6f1fb; --blue-mid: #d0e7f8; --sidebar-w: 220px; }
+        * { box-sizing: border-box; }
+        body { font-family: 'DM Sans', sans-serif; background: #f7f9fc; color: #1a1a2e; margin: 0; }
+        header { background: #fff; border-bottom: 1px solid #eef0f4; padding: 0 2rem; position: sticky; top: 0; z-index: 50; }
+        .header-top { display: flex; align-items: center; justify-content: space-between; padding: 1rem 0 .75rem; }
+        .logo { display: flex; align-items: center; gap: .75rem; }
+        .logo-icon { width: 38px; height: 38px; background: var(--blue); border-radius: 10px; display: flex; align-items: center; justify-content: center; color: #fff; font-weight: 800; font-size: 1rem; }
+        .logo-text { font-size: 1.2rem; font-weight: 700; color: #111; }
+        .logo-sub { font-size: .75rem; color: #9aa3b0; font-weight: 400; margin-left: .4rem; }
+        .live-badge { font-size: .65rem; font-weight: 700; color: #16a34a; background: #f0fdf4; border: 1px solid #bbf7d0; padding: .3rem .8rem; border-radius: 999px; }
+        nav { display: flex; gap: 0; border-top: 1px solid #f3f4f6; }
+        .tab-btn { padding: .8rem 1.25rem; font-size: .875rem; font-weight: 500; color: #7a8494; border: none; background: none; cursor: pointer; border-bottom: 2.5px solid transparent; transition: all .18s; white-space: nowrap; }
+        .tab-btn:hover { color: var(--blue); }
+        .tab-btn.nav-active { color: var(--blue); border-bottom-color: var(--blue); font-weight: 600; }
+        .app-body { display: flex; height: calc(100vh - 108px); overflow: hidden; }
+        aside { width: var(--sidebar-w); min-width: var(--sidebar-w); background: #fff; border-right: 1px solid #eef0f4; overflow-y: auto; padding: 1.25rem .75rem; display: flex; flex-direction: column; gap: .2rem; }
+        .sidebar-label { font-size: .62rem; font-weight: 700; color: #b0b8c4; letter-spacing: .14em; text-transform: uppercase; padding: .5rem 1rem .75rem; }
+        .sem-btn { display: flex; align-items: center; gap: .6rem; padding: .65rem 1rem; border-radius: 10px; border: none; background: none; font-family: 'DM Sans', sans-serif; font-size: .85rem; font-weight: 500; color: #6b7280; cursor: pointer; transition: all .15s; text-align: left; width: 100%; }
+        .sem-btn:hover { background: var(--blue-light); color: var(--blue); }
+        .sem-btn.sem-active { background: var(--blue-light); color: var(--blue); font-weight: 600; border-left: 3px solid var(--blue); }
+        main { flex: 1; overflow-y: auto; padding: 2rem 2.5rem; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
+        .lib-header { display: flex; align-items: flex-end; justify-content: space-between; margin-bottom: 1.75rem; flex-wrap: wrap; gap: 1rem; }
+        .lib-title { font-size: 1.6rem; font-weight: 700; color: #0f172a; letter-spacing: -.4px; }
+        .lib-sub { font-size: .82rem; color: #94a3b8; margin-top: .2rem; }
+        .search-wrap { display: flex; align-items: center; gap: .6rem; background: #fff; border: 1px solid #e2e8f0; border-radius: 12px; padding: .55rem 1rem; transition: border-color .2s; }
+        .search-wrap:focus-within { border-color: var(--blue); }
+        .search-wrap input { border: none; outline: none; font-size: .85rem; font-family: 'DM Sans', sans-serif; color: #374151; width: 180px; background: transparent; }
+        .search-wrap i { color: #cbd5e1; font-size: 1.05rem; }
+        .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 1.1rem; }
+        .course-card { background: #fff; border-radius: 16px; border: 1px solid #eef0f4; padding: 1.35rem; transition: box-shadow .2s, transform .2s; }
+        .course-card:hover { box-shadow: 0 6px 24px rgba(24,95,165,.08); transform: translateY(-1px); }
+        .card-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1.1rem; }
+        .card-icon-wrap { display: flex; align-items: center; gap: .7rem; }
+        .card-icon { width: 40px; height: 40px; background: var(--blue-light); border-radius: 11px; display: flex; align-items: center; justify-content: center; color: var(--blue); font-size: 1.2rem; }
+        .card-title { font-weight: 700; font-size: .95rem; color: #0f172a; }
+        .file-count { font-size: .62rem; font-weight: 700; color: var(--blue); background: var(--blue-light); padding: .28rem .65rem; border-radius: 999px; }
+        .file-row { display: flex; align-items: center; justify-content: space-between; padding: .6rem .7rem; border-radius: 9px; cursor: pointer; transition: background .15s; border: 1px solid transparent; }
+        .file-row:hover { background: #f8fafc; border-color: #e2e8f0; }
+        .file-row .file-name { font-size: .78rem; color: #475569; font-weight: 500; max-width: 210px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .file-row i.arrow { font-size: .82rem; color: #cbd5e1; transition: transform .15s; }
+        .file-row:hover i.arrow { transform: translateX(2px); color: var(--blue); }
+        .empty-folder { font-size: .75rem; color: #cbd5e1; font-style: italic; padding: .75rem; background: #fafafa; border-radius: 8px; }
+        .loading-grid { grid-column: 1/-1; text-align: center; padding: 4rem; }
+        .spinner { width: 30px; height: 30px; border: 2.5px solid #e2e8f0; border-top-color: var(--blue); border-radius: 50%; animation: spin .7s linear infinite; margin: 0 auto 1rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .viewer-frame { width: 100%; height: calc(100vh - 108px - 4rem); border-radius: 16px; border: 1px solid #eef0f4; }
+        .viewer-empty { width: 100%; height: calc(100vh - 108px - 4rem); display: flex; flex-direction: column; align-items: center; justify-content: center; background: #fff; border-radius: 16px; border: 1px solid #eef0f4; color: #cbd5e1; }
+        .viewer-empty i { font-size: 3rem; margin-bottom: 1rem; }
+        .viewer-empty p { font-size: .88rem; color: #94a3b8; }
+        #tab-ai { max-width: 760px; }
+        .chat-shell { background: #fff; border: 1px solid #eef0f4; border-radius: 22px; box-shadow: 0 4px 30px rgba(0,0,0,.05); display: flex; flex-direction: column; overflow: hidden; height: 620px; }
+        .chat-header { padding: 1.1rem 1.5rem; border-bottom: 1px solid #f3f4f6; display: flex; align-items: center; gap: .7rem; background: #fafbfd; }
+        .chat-avatar { width: 36px; height: 36px; background: var(--blue); border-radius: 11px; display: flex; align-items: center; justify-content: center; color: #fff; font-size: .68rem; font-weight: 800; }
+        .chat-name { font-weight: 700; font-size: .92rem; color: #0f172a; }
+        .chat-status { font-size: .7rem; color: #16a34a; font-weight: 500; }
+        #ai-messages { flex: 1; overflow-y: auto; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.1rem; }
+        .msg-bot, .msg-user { display: flex; gap: .7rem; max-width: 88%; }
+        .msg-user { align-self: flex-end; flex-direction: row-reverse; }
+        .msg-avatar { width: 32px; height: 32px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: .62rem; font-weight: 800; flex-shrink: 0; }
+        .msg-bot .msg-avatar { background: var(--blue-light); color: var(--blue); }
+        .msg-user .msg-avatar { background: var(--blue); color: #fff; }
+        .msg-bubble { padding: .85rem 1rem; border-radius: 14px; font-size: .845rem; line-height: 1.65; }
+        .msg-bot .msg-bubble { background: #f8fafc; border: 1px solid #eef0f4; color: #334155; border-top-left-radius: 4px; }
+        .msg-user .msg-bubble { background: var(--blue); color: #fff; border-top-right-radius: 4px; }
+        .msg-bubble pre { background: #1e293b; color: #e2e8f0; padding: .7rem .9rem; border-radius: 8px; font-family: 'DM Mono', monospace; font-size: .76rem; overflow-x: auto; margin: .5rem 0; }
+        .msg-bubble code { font-family: 'DM Mono', monospace; font-size: .8em; background: rgba(0,0,0,.06); padding: .1em .3em; border-radius: 4px; }
+        .msg-user .msg-bubble code { background: rgba(255,255,255,.2); }
+        .thinking { display: flex; gap: 4px; padding: .85rem 1rem; background: #f8fafc; border: 1px solid #eef0f4; border-radius: 14px; border-top-left-radius: 4px; }
+        .thinking span { width: 7px; height: 7px; background: #cbd5e1; border-radius: 50%; animation: bounce .9s infinite; }
+        .thinking span:nth-child(2) { animation-delay: .15s; }
+        .thinking span:nth-child(3) { animation-delay: .3s; }
+        @keyframes bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-5px); } }
+        .chat-input-wrap { padding: .9rem 1.1rem; border-top: 1px solid #f3f4f6; display: flex; gap: .7rem; align-items: center; }
+        #ai-input { flex: 1; padding: .8rem 1rem; border-radius: 13px; border: 1.5px solid #e2e8f0; font-family: 'DM Sans', sans-serif; font-size: .875rem; outline: none; background: #f8fafc; transition: border-color .2s; }
+        #ai-input:focus { border-color: var(--blue); background: #fff; }
+        .send-btn { width: 46px; height: 46px; background: var(--blue); border: none; border-radius: 13px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 1.1rem; transition: background .2s; flex-shrink: 0; }
+        .send-btn:hover { background: #1254a0; }
+        #tab-calc { max-width: 400px; }
+        .calc-shell { background: #0f172a; border-radius: 28px; padding: 2.25rem; box-shadow: 0 20px 60px rgba(0,0,0,.3); }
+        .calc-display { text-align: right; padding: 0 .5rem 1.4rem; }
+        #calc-expr { font-family: 'DM Mono', monospace; color: #64748b; font-size: .78rem; min-height: 1.2rem; margin-bottom: .35rem; }
+        #calc-display { font-family: 'DM Mono', monospace; color: #fff; font-size: 3.2rem; font-weight: 300; letter-spacing: -2px; }
+        .calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: .65rem; }
+        .calc-btn { padding: 1rem; border: none; border-radius: 12px; cursor: pointer; font-family: 'DM Sans', sans-serif; font-size: .95rem; font-weight: 600; transition: all .1s; }
+        .calc-btn:active { transform: scale(.93); }
+        .btn-num { background: #1e293b; color: #e2e8f0; }
+        .btn-num:hover { background: #273549; }
+        .btn-op { background: #243044; color: #e2e8f0; }
+        .btn-op:hover { background: #2e3d58; }
+        .btn-fn { background: #1a2a3a; color: #94a3b8; font-size: .8rem; }
+        .btn-fn:hover { background: #243044; }
+        .btn-clear { background: rgba(239,68,68,.12); color: #f87171; }
+        .btn-clear:hover { background: rgba(239,68,68,.2); }
+        .btn-eq { background: var(--blue); color: #fff; }
+        .btn-eq:hover { background: #1254a0; }
+        .btn-wide { grid-column: span 2; }
+        #tab-tables { max-width: 500px; }
+        .tables-shell { background: #fff; border: 1px solid #eef0f4; border-radius: 22px; padding: 2.5rem; }
+        .tables-title { text-align: center; font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-bottom: 1.75rem; }
+        .field-label { font-size: .63rem; font-weight: 700; color: #9aa3b0; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .5rem; display: block; }
+        .dist-select { width: 100%; padding: .85rem 1rem; border-radius: 13px; border: 1.5px solid #e2e8f0; font-family: 'DM Sans', sans-serif; font-size: .88rem; outline: none; background: #f8fafc; transition: border-color .2s; margin-bottom: 1.25rem; }
+        .dist-select:focus { border-color: var(--blue); }
+        .calc-dist-btn { width: 100%; padding: .95rem; background: var(--blue); color: #fff; border: none; border-radius: 13px; font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 700; cursor: pointer; transition: background .2s; }
+        .calc-dist-btn:hover { background: #1254a0; }
+        #dist-result { text-align: center; font-size: 4rem; font-weight: 800; color: var(--blue); letter-spacing: -3px; margin-top: 1.25rem; font-family: 'DM Mono', monospace; min-height: 5rem; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-thumb { background: #dde3ec; border-radius: 10px; }
+        @media(max-width:700px){
+            aside { display: none; }
+            main { padding: 1.25rem; }
+            .course-grid { grid-template-columns: 1fr; }
+            #tab-calc { max-width: 100%; }
+        }
+    </style>
 </head>
 <body>
+    <header>
+        <div class="header-top">
+            <div class="logo">
+                <div class="logo-icon">SM</div>
+                <span class="logo-text">StatMate <span class="logo-sub">· University of Hargeisa</span></span>
+            </div>
+            <div class="live-badge">● LIVE SYSTEM</div>
+        </div>
+        <nav>
+            <button class="tab-btn nav-active" id="btn-library" onclick="showTab('library')"><i class="ti ti-books" style="margin-right:.4rem"></i>Library</button>
+            <button class="tab-btn" id="btn-viewer" onclick="showTab('viewer')"><i class="ti ti-file-search" style="margin-right:.4rem"></i>Document Viewer</button>
+            <button class="tab-btn" id="btn-ai" onclick="showTab('ai')"><i class="ti ti-sparkles" style="margin-right:.4rem"></i>AI Assistant</button>
+            <button class="tab-btn" id="btn-calc" onclick="showTab('calc')"><i class="ti ti-calculator" style="margin-right:.4rem"></i>Calculator</button>
+            <button class="tab-btn" id="btn-tables" onclick="showTab('tables')"><i class="ti ti-table" style="margin-right:.4rem"></i>Stat Tables</button>
+        </nav>
+    </header>
 
-<!-- ═══ HEADER ═══════════════════════════════════════════════════════════ -->
-<header>
-  <div class="header-top">
-    <div class="logo">
-      <div class="logo-icon">SM</div>
-      <span class="logo-text">StatMate<span class="logo-sub"> · University of Hargeisa</span></span>
+    <div class="app-body">
+        <aside id="sidebar">
+            <div class="sidebar-label">Academic Years</div>
+        </aside>
+        <main>
+            <!-- LIBRARY -->
+            <div id="tab-library" class="tab-content active">
+                <div class="lib-header">
+                    <div>
+                        <div class="lib-title" id="current-sem-title">Year 3 · Semester 2</div>
+                        <div class="lib-sub">Click any file to open it in the Document Viewer.</div>
+                    </div>
+                    <div class="search-wrap">
+                        <i class="ti ti-search"></i>
+                        <input type="text" id="file-search" placeholder="Search subjects..." oninput="filterCards()">
+                    </div>
+                </div>
+                <div id="course-grid" class="course-grid"></div>
+            </div>
+
+            <!-- VIEWER -->
+            <div id="tab-viewer" class="tab-content">
+                <div id="reader-frame" class="viewer-empty">
+                    <i class="ti ti-file-search"></i>
+                    <p>No document open. Choose a file from the Library.</p>
+                </div>
+            </div>
+
+            <!-- AI CHAT -->
+            <div id="tab-ai" class="tab-content">
+                <div class="chat-shell">
+                    <div class="chat-header">
+                        <div class="chat-avatar">SM</div>
+                        <div>
+                            <div class="chat-name">StatMate AI · Gemini</div>
+                            <div class="chat-status">● Calibrated for UoH Statistics curriculum</div>
+                        </div>
+                    </div>
+                    <div id="ai-messages">
+                        <div class="msg-bot">
+                            <div class="msg-avatar">SM</div>
+                            <div class="msg-bubble">
+                                Hello! I'm StatMate AI, calibrated for the University of Hargeisa Statistics curriculum.<br><br>
+                                I can help with <strong>R programming</strong>, statistical concepts, biostatistics, research methodology, and all your Semester 6 courses. What are you working on?
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chat-input-wrap">
+                        <input type="text" id="ai-input" placeholder="Ask about statistics, R code, or your courses..." onkeydown="if(event.key==='Enter')sendChat()">
+                        <button class="send-btn" onclick="sendChat()"><i class="ti ti-send"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CALCULATOR -->
+            <div id="tab-calc" class="tab-content">
+                <div class="calc-shell">
+                    <div class="calc-display">
+                        <div id="calc-expr"></div>
+                        <div id="calc-display">0</div>
+                    </div>
+                    <div class="calc-grid">
+                        <button class="calc-btn btn-fn" onclick="calcFn('Math.sin(')">sin</button>
+                        <button class="calc-btn btn-fn" onclick="calcFn('Math.cos(')">cos</button>
+                        <button class="calc-btn btn-fn" onclick="calcFn('Math.sqrt(')">√</button>
+                        <button class="calc-btn btn-fn" onclick="calcFn('Math.log(')">ln</button>
+                        <button class="calc-btn btn-clear" onclick="calcClear()">AC</button>
+                        <button class="calc-btn btn-op" onclick="calcOp('/')">÷</button>
+                        <button class="calc-btn btn-op" onclick="calcOp('*')">×</button>
+                        <button class="calc-btn btn-op" onclick="calcOp('-')">−</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('7')">7</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('8')">8</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('9')">9</button>
+                        <button class="calc-btn btn-op" onclick="calcOp('+')">+</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('4')">4</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('5')">5</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('6')">6</button>
+                        <button class="calc-btn btn-eq" style="grid-row:span 2" onclick="calcEquals()">=</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('1')">1</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('2')">2</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('3')">3</button>
+                        <button class="calc-btn btn-num btn-wide" onclick="calcNum('0')">0</button>
+                        <button class="calc-btn btn-num" onclick="calcNum('.')">.</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STAT TABLES -->
+            <div id="tab-tables" class="tab-content">
+                <div class="tables-shell">
+                    <div class="tables-title">Distribution Critical Values</div>
+                    <label class="field-label">Statistical Test</label>
+                    <select id="dist-type" class="dist-select">
+                        <option value="z">Z-Normal (95% CI, α=0.05)</option>
+                        <option value="z99">Z-Normal (99% CI, α=0.01)</option>
+                        <option value="t10">T-Student (df=10, α=0.05)</option>
+                        <option value="t20">T-Student (df=20, α=0.05)</option>
+                        <option value="t30">T-Student (df=30, α=0.05)</option>
+                        <option value="f">F-Snedecor (df1=3, df2=20, α=0.05)</option>
+                        <option value="chi5">Chi-Squared (df=5, α=0.05)</option>
+                        <option value="chi10">Chi-Squared (df=10, α=0.05)</option>
+                    </select>
+                    <button class="calc-dist-btn" onclick="calcDist()">Get Critical Value</button>
+                    <div id="dist-result"></div>
+                </div>
+            </div>
+        </main>
     </div>
-    <div class="live-badge">● LIVE SYSTEM</div>
-  </div>
-  <nav>
-    <button class="tab-btn active" id="btn-library" onclick="showTab('library')">
-      <i class="ti ti-books"></i> Library
-    </button>
-    <button class="tab-btn" id="btn-viewer" onclick="showTab('viewer')">
-      <i class="ti ti-file-search"></i> Document Viewer
-    </button>
-    <button class="tab-btn" id="btn-ai" onclick="showTab('ai')">
-      <i class="ti ti-sparkles"></i> AI Assistant
-    </button>
-    <button class="tab-btn" id="btn-calc" onclick="showTab('calc')">
-      <i class="ti ti-calculator"></i> Calculator
-    </button>
-    <button class="tab-btn" id="btn-tables" onclick="showTab('tables')">
-      <i class="ti ti-table"></i> Stat Tables
-    </button>
-  </nav>
-</header>
-
-<div class="app-body">
-
-  <!-- ═══ SIDEBAR ═══════════════════════════════════════════════════════ -->
-  <aside id="sidebar">
-    <div class="sidebar-label">Academic Years</div>
-  </aside>
-
-  <!-- ═══ MAIN ══════════════════════════════════════════════════════════ -->
-  <main>
-
-    <!-- LIBRARY -->
-    <div id="panel-library" class="tab-panel active">
-      <div class="lib-header">
-        <div>
-          <div class="lib-title" id="sem-title">Loading…</div>
-          <div class="lib-sub">Click any file to open it in the Document Viewer.</div>
-        </div>
-        <div class="search-box">
-          <i class="ti ti-search" style="color:#cbd5e1"></i>
-          <input type="text" id="search-input" placeholder="Search courses…" oninput="filterCourses()" />
-        </div>
-      </div>
-      <div id="course-grid" class="course-grid">
-        <div class="loading-block">
-          <div class="spinner"></div>
-          <p style="color:#94a3b8;font-size:.85rem">Loading library…</p>
-        </div>
-      </div>
-    </div>
-
-    <!-- VIEWER -->
-    <div id="panel-viewer" class="tab-panel">
-      <div id="viewer-area" class="viewer-empty">
-        <i class="ti ti-file-search"></i>
-        <p>No document open. Choose a file from the Library.</p>
-      </div>
-    </div>
-
-    <!-- AI -->
-    <div id="panel-ai" class="tab-panel">
-      <div class="chat-shell">
-        <div class="chat-hdr">
-          <div class="chat-av">SM</div>
-          <div>
-            <div class="chat-name">StatMate AI</div>
-            <div class="chat-status">● Calibrated for UoH Statistics &amp; Data Science curriculum</div>
-          </div>
-        </div>
-        <div id="ai-msgs">
-          <div class="msg bot">
-            <div class="msg-av">SM</div>
-            <div class="msg-bub">
-              Salaam! I'm StatMate AI, your academic assistant at the University of Hargeisa 📊<br><br>
-              I can help with <strong>statistics concepts</strong>, <strong>R programming</strong>, biostatistics, research methodology, experimental design, time series, and all your coursework. What are you studying today?
-            </div>
-          </div>
-        </div>
-        <div class="chat-input-row">
-          <input type="text" id="ai-input"
-            placeholder="Ask about statistics, R code, or your courses…"
-            onkeydown="if(event.key==='Enter')sendChat()" />
-          <button class="send-btn" id="send-btn" onclick="sendChat()">
-            <i class="ti ti-send"></i>
-          </button>
-        </div>
-      </div>
-    </div>
-
-    <!-- CALCULATOR -->
-    <div id="panel-calc" class="tab-panel">
-      <div class="calc-shell">
-        <div class="calc-display">
-          <div id="calc-expr"></div>
-          <div id="calc-main">0</div>
-        </div>
-        <div class="calc-grid">
-          <!-- Row 1: scientific functions -->
-          <button class="cb cb-fn" onclick="calcFn('Math.sin(')">sin</button>
-          <button class="cb cb-fn" onclick="calcFn('Math.cos(')">cos</button>
-          <button class="cb cb-fn" onclick="calcFn('Math.tan(')">tan</button>
-          <button class="cb cb-fn" onclick="calcFn('Math.log(')">ln</button>
-          <!-- Row 2 -->
-          <button class="cb cb-fn" onclick="calcFn('Math.log10(')">log</button>
-          <button class="cb cb-fn" onclick="calcFn('Math.sqrt(')">√</button>
-          <button class="cb cb-fn" onclick="calcFn('Math.PI')">π</button>
-          <button class="cb cb-fn" onclick="calcFn('Math.E')">e</button>
-          <!-- Row 3 -->
-          <button class="cb cb-clr" onclick="calcClear()">AC</button>
-          <button class="cb cb-op"  onclick="calcOp('**2')">x²</button>
-          <button class="cb cb-op"  onclick="calcOp('%')">%</button>
-          <button class="cb cb-op"  onclick="calcOp('/')">÷</button>
-          <!-- Row 4 -->
-          <button class="cb cb-num" onclick="calcNum('7')">7</button>
-          <button class="cb cb-num" onclick="calcNum('8')">8</button>
-          <button class="cb cb-num" onclick="calcNum('9')">9</button>
-          <button class="cb cb-op"  onclick="calcOp('*')">×</button>
-          <!-- Row 5 -->
-          <button class="cb cb-num" onclick="calcNum('4')">4</button>
-          <button class="cb cb-num" onclick="calcNum('5')">5</button>
-          <button class="cb cb-num" onclick="calcNum('6')">6</button>
-          <button class="cb cb-op"  onclick="calcOp('-')">−</button>
-          <!-- Row 6 -->
-          <button class="cb cb-num" onclick="calcNum('1')">1</button>
-          <button class="cb cb-num" onclick="calcNum('2')">2</button>
-          <button class="cb cb-num" onclick="calcNum('3')">3</button>
-          <button class="cb cb-op"  onclick="calcOp('+')">+</button>
-          <!-- Row 7 -->
-          <button class="cb cb-num cb-wide" onclick="calcNum('0')">0</button>
-          <button class="cb cb-num" onclick="calcNum('.')">.</button>
-          <button class="cb cb-eq"  onclick="calcEquals()">=</button>
-        </div>
-      </div>
-    </div>
-
-    <!-- STAT TABLES -->
-    <div id="panel-tables" class="tab-panel">
-      <div class="tbl-shell">
-        <div class="tbl-title">Distribution Critical Values</div>
-        <div class="tbl-tabs">
-          <button class="tbl-tab active" onclick="switchDist('f',this)">F distribution</button>
-          <button class="tbl-tab" onclick="switchDist('t',this)">t distribution</button>
-          <button class="tbl-tab" onclick="switchDist('chi',this)">Chi-square (χ²)</button>
-          <button class="tbl-tab" onclick="switchDist('z',this)">Z (Normal)</button>
-        </div>
-
-        <!-- F -->
-        <div id="dist-f">
-          <div class="field-grid">
-            <div>
-              <label class="field-label">Significance (α)</label>
-              <select id="f-alpha" class="tbl-select">
-                <option>0.001</option><option>0.005</option><option>0.01</option>
-                <option>0.025</option><option selected>0.05</option><option>0.10</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">df₁ (numerator)</label>
-              <input id="f-d1" class="tbl-input" type="number" min="1" value="3" />
-            </div>
-          </div>
-          <label class="field-label">df₂ (denominator)</label>
-          <input id="f-d2" class="tbl-input" type="number" min="1" value="20" style="max-width:50%" />
-        </div>
-
-        <!-- T -->
-        <div id="dist-t" style="display:none">
-          <div class="field-grid">
-            <div>
-              <label class="field-label">Significance (α)</label>
-              <select id="t-alpha" class="tbl-select">
-                <option>0.001</option><option>0.005</option><option>0.01</option>
-                <option>0.025</option><option selected>0.05</option><option>0.10</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">Degrees of freedom (df)</label>
-              <input id="t-df" class="tbl-input" type="number" min="1" value="10" />
-            </div>
-          </div>
-          <label class="field-label">Tail type</label>
-          <select id="t-tail" class="tbl-select" style="max-width:50%">
-            <option value="two">Two-tailed</option>
-            <option value="one">One-tailed</option>
-          </select>
-        </div>
-
-        <!-- CHI -->
-        <div id="dist-chi" style="display:none">
-          <div class="field-grid">
-            <div>
-              <label class="field-label">Significance (α)</label>
-              <select id="chi-alpha" class="tbl-select">
-                <option>0.001</option><option>0.005</option><option>0.01</option>
-                <option>0.025</option><option selected>0.05</option><option>0.10</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">Degrees of freedom (df)</label>
-              <input id="chi-df" class="tbl-input" type="number" min="1" value="5" />
-            </div>
-          </div>
-        </div>
-
-        <!-- Z -->
-        <div id="dist-z" style="display:none">
-          <div class="field-grid">
-            <div>
-              <label class="field-label">Significance (α)</label>
-              <select id="z-alpha" class="tbl-select">
-                <option>0.001</option><option>0.005</option><option>0.01</option>
-                <option>0.025</option><option selected>0.05</option><option>0.10</option>
-              </select>
-            </div>
-            <div>
-              <label class="field-label">Tail type</label>
-              <select id="z-tail" class="tbl-select">
-                <option value="two">Two-tailed</option>
-                <option value="one">One-tailed</option>
-              </select>
-            </div>
-          </div>
-        </div>
-
-        <button class="lookup-btn" onclick="calcDist()">
-          <i class="ti ti-search" style="margin-right:.4rem"></i>Find Critical Value
-        </button>
-        <div id="dist-result" style="display:none" class="result-box">
-          <div class="result-label" id="dist-label"></div>
-          <div class="result-val" id="dist-val"></div>
-        </div>
-      </div>
-    </div>
-
-  </main>
-</div><!-- end app-body -->
 
 <script>
-/* ═══════════════════════════════════════════════════════════════
-   CONFIG
-═══════════════════════════════════════════════════════════════ */
-const SUPA   = 'https://dedyworlrfalwoujwkyx.supabase.co';
-const KEY    = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
-const BUCKET = 'course-materials';
+// ── CONFIG ──────────────────────────────────────────────────────────────────
+const SUPA_URL   = 'https://dedyworlrfalwoujwkyx.supabase.co';
+const SUPA_KEY   = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
+const BUCKET     = 'course-materials';
+const OPENROUTER_KEY = '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';
 
-/* ═══════════════════════════════════════════════════════════════
-   CURRICULUM
-   folder: matches the Supabase folder name exactly
-   courses: subfolder names inside that folder (exact match)
-═══════════════════════════════════════════════════════════════ */
+// ── CURRICULUM MAP ───────────────────────────────────────────────────────────
+// KEY = folder name in Supabase exactly as created
+// Value = display label shown in sidebar
 const SEMESTERS = [
-  { label:'Year 1 · Sem 1', folder:null,            courses:['Introduction to Statistics','Calculus I','Computer Fundamentals','Academic Writing'] },
-  { label:'Year 1 · Sem 2', folder:null,            courses:['Probability Theory','Calculus II','Linear Algebra I','Research Methods'] },
-  { label:'Year 2 · Sem 1', folder:null,            courses:['Statistical Inference','Calculus III','Linear Algebra II','Data Structures'] },
-  { label:'Year 2 · Sem 2', folder:null,            courses:['Regression Analysis','Mathematical Statistics','Database Systems','SPSS & R'] },
-  { label:'Year 3 · Sem 1', folder:null,            courses:['Multivariate Analysis','Sampling Methods','GIS & Spatial Data','Econometrics'] },
-  {
-    label:'Year 3 · Sem 2',
-    folder:'Year3-Semester2',
-    courses:['Biostatistics','Data Computing R','Data Stuctures & Algorithm','Experimental Design','Research Methadology','Time Series']
-  },
-  { label:'Year 4 · Sem 1', folder:null,            courses:['Advanced Inference','Survey Methods','Data Visualization','Thesis Proposal'] },
-  { label:'Year 4 · Sem 2', folder:null,            courses:['Capstone Project','Advanced ML','Professional Ethics','Final Thesis'] },
+    { label: 'Semester 1', folder: 'Semester 1', courses: [] },
+    { label: 'Semester 2', folder: 'Semester 2', courses: [] },
+    { label: 'Semester 3', folder: 'Semester 3', courses: [] },
+    { label: 'Semester 4', folder: 'Semester 4', courses: [] },
+    { label: 'Semester 5', folder: 'Semester 5', courses: [] },
+    {
+        label: 'Semester 6',
+        folder: 'Semester 6',
+        courses: [
+            'Biostatistics',
+            'Data Computing R',
+            'Data Stuctures & Algorithm',
+            'Experimental Design',
+            'Research Methadology',
+            'Time Series'
+        ]
+    },
+    { label: 'Semester 7', folder: 'Semester 7', courses: [] },
+    { label: 'Semester 8', folder: 'Semester 8', courses: [] },
 ];
 
-let currentSem = 5; // default: Year 3 Sem 2
+let currentSemIdx = 5; // Semester 6 by default
 let chatHistory = [];
-let currentDistType = 'f';
 
-/* ═══════════════════════════════════════════════════════════════
-   TAB SWITCHING
-═══════════════════════════════════════════════════════════════ */
+// ── TABS ─────────────────────────────────────────────────────────────────────
 function showTab(id) {
-  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('panel-' + id).classList.add('active');
-  document.getElementById('btn-'   + id).classList.add('active');
+    document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+    document.querySelectorAll('nav .tab-btn').forEach(b => b.classList.remove('nav-active'));
+    document.getElementById('tab-' + id).classList.add('active');
+    document.getElementById('btn-' + id).classList.add('nav-active');
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   SIDEBAR
-═══════════════════════════════════════════════════════════════ */
+// ── SIDEBAR ───────────────────────────────────────────────────────────────────
 function initSidebar() {
-  const aside = document.getElementById('sidebar');
-  SEMESTERS.forEach((sem, i) => {
-    const btn = document.createElement('button');
-    btn.id = 'sem-btn-' + i;
-    btn.className = 'sem-btn' + (i === currentSem ? ' active' : '');
-    btn.innerHTML = `<i class="ti ti-school"></i> ${sem.label}`;
-    btn.onclick = () => selectSem(i);
-    aside.appendChild(btn);
-  });
-}
-
-async function selectSem(idx) {
-  currentSem = idx;
-  document.querySelectorAll('.sem-btn').forEach(b => b.classList.remove('active'));
-  document.getElementById('sem-btn-' + idx).classList.add('active');
-  showTab('library');
-  await renderLibrary(idx);
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   SUPABASE FETCH (with delimiter for folder listing)
-═══════════════════════════════════════════════════════════════ */
-async function supaList(prefix, delimiter = '/') {
-  try {
-    const body = { prefix, limit: 200 };
-    if (delimiter) body.delimiter = delimiter;
-    const r = await fetch(`${SUPA}/storage/v1/object/list/${BUCKET}`, {
-      method: 'POST',
-      headers: { apikey: KEY, Authorization: 'Bearer ' + KEY, 'Content-Type': 'application/json' },
-      body: JSON.stringify(body),
+    const nav = document.getElementById('sidebar');
+    SEMESTERS.forEach((sem, idx) => {
+        const btn = document.createElement('button');
+        btn.id = `sem-${idx}`;
+        btn.className = 'sem-btn' + (idx === currentSemIdx ? ' sem-active' : '');
+        btn.innerHTML = `<i class="ti ti-school"></i> ${sem.label}`;
+        btn.onclick = () => setSemester(idx);
+        nav.appendChild(btn);
     });
-    const d = await r.json();
-    return Array.isArray(d) ? d.filter(x => x && x.name !== '.emptyFolderPlaceholder') : [];
-  } catch { return []; }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   LIBRARY
-═══════════════════════════════════════════════════════════════ */
+async function setSemester(idx) {
+    currentSemIdx = idx;
+    document.querySelectorAll('.sem-btn').forEach(b => b.classList.remove('sem-active'));
+    document.getElementById(`sem-${idx}`).classList.add('sem-active');
+    document.getElementById('current-sem-title').textContent = SEMESTERS[idx].label;
+    showTab('library');
+    await renderLibrary(idx);
+}
+
+// ── LIBRARY ───────────────────────────────────────────────────────────────────
 async function renderLibrary(idx) {
-  const sem  = SEMESTERS[idx];
-  const grid = document.getElementById('course-grid');
-  document.getElementById('sem-title').textContent = sem.label;
-  grid.innerHTML = `<div class="loading-block"><div class="spinner"></div><p style="color:#94a3b8;font-size:.85rem">Loading ${sem.label}…</p></div>`;
+    const sem = SEMESTERS[idx];
+    const grid = document.getElementById('course-grid');
+    grid.innerHTML = `<div class="loading-grid"><div class="spinner"></div><p style="color:#94a3b8;font-size:.85rem">Loading ${sem.label}…</p></div>`;
 
-  if (!sem.folder) {
-    grid.innerHTML = sem.courses.map(c => emptyCard(c)).join('');
-    return;
-  }
-
-  // Has a real Supabase folder — load files per course
-  const cards = await Promise.all(sem.courses.map(course => buildCard(sem.folder, course)));
-  grid.innerHTML = cards.join('');
-}
-
-function emptyCard(course) {
-  return `
-  <div class="course-card" data-course="${course.toLowerCase()}">
-    <div class="card-head">
-      <div class="card-icon-row">
-        <div class="card-icon"><i class="ti ti-book-2"></i></div>
-        <span class="card-title">${course}</span>
-      </div>
-      <span class="file-count">0 FILES</span>
-    </div>
-    <div class="empty-msg">No files uploaded yet for this course.</div>
-  </div>`;
-}
-
-async function buildCard(semFolder, course) {
-  const prefix = `${semFolder}/${course}/`;
-  const files  = [];
-  await scanDeep(prefix, '', files, 0);
-
-  const rows = files.length
-    ? files.map(f => {
-        const safe = f.path.replace(/'/g, "\\'");
-        const ext  = f.path.split('.').pop().toLowerCase();
-        const icon = ext === 'pdf' ? 'ti-file-type-pdf'
-                   : ['ppt','pptx'].includes(ext) ? 'ti-presentation'
-                   : ['doc','docx'].includes(ext) ? 'ti-file-word'
-                   : ['xls','xlsx'].includes(ext) ? 'ti-file-spreadsheet'
-                   : 'ti-file-description';
-        return `<div class="file-row" onclick="openDoc('${safe}')">
-          <div class="file-row-left">
-            <i class="ti ${icon}" style="color:#94a3b8;font-size:.92rem;flex-shrink:0"></i>
-            <span class="file-name">${f.label}</span>
-          </div>
-          <i class="ti ti-chevron-right file-arrow"></i>
-        </div>`;
-      }).join('')
-    : `<div class="empty-msg">No files found for this course.</div>`;
-
-  return `
-  <div class="course-card" data-course="${course.toLowerCase()}">
-    <div class="card-head">
-      <div class="card-icon-row">
-        <div class="card-icon"><i class="ti ti-book-2"></i></div>
-        <span class="card-title">${course}</span>
-      </div>
-      <span class="file-count">${files.length} FILE${files.length !== 1 ? 'S' : ''}</span>
-    </div>
-    ${rows}
-  </div>`;
-}
-
-// Recursively scan subfolders (max 3 levels)
-async function scanDeep(prefix, labelPrefix, out, depth) {
-  if (depth > 3) return;
-  const items = await supaList(prefix, '/');
-  for (const item of items) {
-    if (!item) continue;
-    if (item.id) {
-      // file
-      const label = labelPrefix ? `${labelPrefix} · ${item.name}` : item.name;
-      out.push({ label, path: prefix + item.name });
-    } else {
-      // subfolder
-      const sub = labelPrefix ? `${labelPrefix} / ${item.name}` : item.name;
-      await scanDeep(`${prefix}${item.name}/`, sub, out, depth + 1);
+    if (!sem.courses.length) {
+        // Auto-discover courses by listing subfolders
+        const items = await fetchCloudFiles(sem.folder + '/');
+        sem.courses = items.filter(i => !i.id && i.name !== '.emptyFolderPlaceholder').map(i => i.name);
     }
-  }
+
+    if (!sem.courses.length) {
+        grid.innerHTML = `<div class="loading-grid"><p style="color:#94a3b8">No courses uploaded yet for ${sem.label}.</p></div>`;
+        return;
+    }
+
+    const cards = await Promise.all(sem.courses.map(course => buildCard(sem.folder, course)));
+    grid.innerHTML = cards.join('');
 }
 
-function filterCourses() {
-  const q = document.getElementById('search-input').value.toLowerCase();
-  document.querySelectorAll('.course-card').forEach(c => {
-    c.style.display = c.dataset.course.includes(q) ? '' : 'none';
-  });
+// ── CARD BUILDER (scans 3 levels deep: course → subfolder → week → file) ─────
+async function buildCard(semFolder, course) {
+    const folderPath = `${semFolder}/${course}/`;
+    const allFiles = [];
+    await scanFolder(folderPath, '', allFiles, 0);
+
+    const fileRows = allFiles.length
+        ? allFiles.map(f => {
+            const safePath = f.path.replace(/\\/g, '\\\\').replace(/'/g, "\\'");
+            const ext = f.path.split('.').pop().toLowerCase();
+            const icon = ext === 'pdf' ? 'ti-file-type-pdf'
+                : ['ppt','pptx'].includes(ext) ? 'ti-presentation'
+                : ['doc','docx'].includes(ext) ? 'ti-file-word'
+                : 'ti-file-description';
+            return `<div class="file-row" onclick="openDocument('${safePath}')">
+                <div style="display:flex;align-items:center;gap:.6rem;min-width:0">
+                    <i class="ti ${icon}" style="color:#94a3b8;font-size:.92rem;flex-shrink:0"></i>
+                    <span class="file-name">${f.label}</span>
+                </div>
+                <i class="ti ti-chevron-right arrow"></i>
+            </div>`;
+        }).join('')
+        : `<div class="empty-folder">No files uploaded yet.</div>`;
+
+    return `
+    <div class="course-card" data-course="${course.toLowerCase()}">
+        <div class="card-head">
+            <div class="card-icon-wrap">
+                <div class="card-icon"><i class="ti ti-book-2"></i></div>
+                <span class="card-title">${course}</span>
+            </div>
+            <span class="file-count">${allFiles.length} FILES</span>
+        </div>
+        ${fileRows}
+    </div>`;
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   DOCUMENT VIEWER
-═══════════════════════════════════════════════════════════════ */
-function openDoc(path) {
-  const url  = `${SUPA}/storage/v1/object/public/${BUCKET}/${path.split('/').map(encodeURIComponent).join('/')}`;
-  const ext  = path.split('.').pop().toLowerCase();
-  const name = path.split('/').pop();
-  const area = document.getElementById('viewer-area');
-
-  if (ext === 'pdf') {
-    area.className = 'viewer-frame';
-    area.innerHTML = `<iframe src="${url}" style="width:100%;height:100%;border:none"></iframe>`;
-  } else if (['png','jpg','jpeg','gif','webp'].includes(ext)) {
-    area.className = 'viewer-frame';
-    area.style.cssText = 'display:flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;border:1px solid #eef0f4';
-    area.innerHTML = `<img src="${url}" style="max-width:100%;max-height:100%;object-fit:contain;border-radius:12px">`;
-  } else {
-    area.className = 'viewer-empty';
-    area.removeAttribute('style');
-    area.innerHTML = `
-      <i class="ti ti-file-description"></i>
-      <p>${name}</p>
-      <a href="${url}" target="_blank" download
-        style="margin-top:1rem;background:var(--blue);color:#fff;padding:.7rem 1.5rem;border-radius:10px;text-decoration:none;font-size:.85rem;font-weight:600;display:inline-flex;align-items:center;gap:.4rem">
-        <i class="ti ti-download"></i> Download File
-      </a>
-      <a href="${url}" target="_blank"
-        style="margin-top:.6rem;color:var(--blue);font-size:.8rem;text-decoration:none">
-        Open in new tab ↗
-      </a>`;
-  }
-  showTab('viewer');
+// Recursively scan up to 3 levels deep
+async function scanFolder(prefix, labelPrefix, allFiles, depth) {
+    if (depth > 3) return;
+    const items = await fetchCloudFiles(prefix);
+    for (const item of items) {
+        if (!item || item.name === '.emptyFolderPlaceholder') continue;
+        if (item.id) {
+            // It's a file
+            const label = labelPrefix ? `${labelPrefix} · ${item.name}` : item.name;
+            allFiles.push({ label, path: `${prefix}${item.name}` });
+        } else {
+            // It's a subfolder — go deeper
+            const subLabel = labelPrefix ? `${labelPrefix} / ${item.name}` : item.name;
+            await scanFolder(`${prefix}${item.name}/`, subLabel, allFiles, depth + 1);
+        }
+    }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   AI CHAT — Pollinations AI (free, no key required)
-═══════════════════════════════════════════════════════════════ */
-function fmtMsg(text) {
-  return text
-    .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) =>
-      `<pre><code>${c.replace(/</g,'&lt;').replace(/>/g,'&gt;').trim()}</code></pre>`)
-    .replace(/`([^`]+)`/g, '<code>$1</code>')
-    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
-    .replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
+// ── SUPABASE FETCH ────────────────────────────────────────────────────────────
+async function fetchCloudFiles(prefix) {
+    try {
+        const res = await fetch(`${SUPA_URL}/storage/v1/object/list/${BUCKET}`, {
+            method: 'POST',
+            headers: { 'apikey': SUPA_KEY, 'Authorization': 'Bearer ' + SUPA_KEY, 'Content-Type': 'application/json' },
+            body: JSON.stringify({ prefix, limit: 200, delimiter: '/' })
+        });
+        const data = await res.json();
+        return Array.isArray(data) ? data : [];
+    } catch { return []; }
 }
 
+// ── DOCUMENT VIEWER ───────────────────────────────────────────────────────────
+function openDocument(path) {
+    const url = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${path.split('/').map(encodeURIComponent).join('/')}`;
+    const ext = path.split('.').pop().toLowerCase();
+    const frame = document.getElementById('reader-frame');
+    if (['pdf'].includes(ext)) {
+        frame.className = 'viewer-frame';
+        frame.innerHTML = `<iframe src="${url}" style="width:100%;height:100%;border:none;border-radius:16px"></iframe>`;
+    } else if (['png','jpg','jpeg','gif'].includes(ext)) {
+        frame.className = 'viewer-frame';
+        frame.style.cssText = 'display:flex;align-items:center;justify-content:center;background:#fff;border-radius:16px;border:1px solid #eef0f4';
+        frame.innerHTML = `<img src="${url}" style="max-width:100%;max-height:100%;border-radius:12px;object-fit:contain">`;
+    } else {
+        frame.className = 'viewer-frame';
+        frame.style.cssText = 'display:flex;flex-direction:column;align-items:center;justify-content:center;background:#fff;border-radius:16px;border:1px solid #eef0f4;gap:1rem';
+        frame.innerHTML = `<i class="ti ti-file-description" style="font-size:3rem;color:#cbd5e1"></i><p style="color:#94a3b8;font-size:.9rem">${path.split('/').pop()}</p><a href="${url}" target="_blank" style="background:var(--blue);color:#fff;padding:.7rem 1.5rem;border-radius:10px;text-decoration:none;font-size:.85rem;font-weight:600"><i class="ti ti-external-link"></i> Open File</a>`;
+    }
+    showTab('viewer');
+}
+
+function filterCards() {
+    const q = document.getElementById('file-search').value.toLowerCase();
+    document.querySelectorAll('.course-card').forEach(c => {
+        c.style.display = c.dataset.course.includes(q) ? '' : 'none';
+    });
+}
+
+// ── AI CHAT (GEMINI) ──────────────────────────────────────────────────────────
 function appendMsg(role, html) {
-  const box = document.getElementById('ai-msgs');
-  const div = document.createElement('div');
-  div.className = `msg ${role}`;
-  div.innerHTML = `<div class="msg-av">${role === 'user' ? 'A' : 'SM'}</div><div class="msg-bub">${html}</div>`;
-  box.appendChild(div);
-  box.scrollTop = box.scrollHeight;
-  return div;
+    const box = document.getElementById('ai-messages');
+    const isUser = role === 'user';
+    const div = document.createElement('div');
+    div.className = isUser ? 'msg-user' : 'msg-bot';
+    div.innerHTML = `<div class="msg-avatar">${isUser ? 'A' : 'SM'}</div><div class="msg-bubble">${html}</div>`;
+    box.appendChild(div);
+    box.scrollTop = box.scrollHeight;
+    return div;
+}
+
+function fmt(text) {
+    return text
+        .replace(/```(\w*)\n?([\s\S]*?)```/g, (_, l, c) => `<pre><code>${c.replace(/</g,'&lt;').replace(/>/g,'&gt;').trim()}</code></pre>`)
+        .replace(/`([^`]+)`/g, '<code>$1</code>')
+        .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+        .replace(/\n\n/g, '<br><br>').replace(/\n/g, '<br>');
 }
 
 async function sendChat() {
-  const inp  = document.getElementById('ai-input');
-  const btn  = document.getElementById('send-btn');
-  const text = inp.value.trim();
-  if (!text) return;
+    const input = document.getElementById('ai-input');
+    const text = input.value.trim();
+    if (!text) return;
+    input.value = '';
+    appendMsg('user', text.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
+    chatHistory.push({ role: 'user', content: text });
 
-  inp.value = '';
-  btn.disabled = true;
-  appendMsg('user', text.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
-  chatHistory.push({ role:'user', content:text });
+    const box = document.getElementById('ai-messages');
+    const thinkEl = document.createElement('div');
+    thinkEl.className = 'msg-bot';
+    thinkEl.innerHTML = `<div class="msg-avatar">SM</div><div class="thinking"><span></span><span></span><span></span></div>`;
+    box.appendChild(thinkEl);
+    box.scrollTop = box.scrollHeight;
 
-  // Thinking indicator
-  const box = document.getElementById('ai-msgs');
-  const think = document.createElement('div');
-  think.className = 'msg bot';
-  think.innerHTML = `<div class="msg-av">SM</div><div class="thinking"><span></span><span></span><span></span></div>`;
-  box.appendChild(think);
-  box.scrollTop = box.scrollHeight;
+    const sem = SEMESTERS[currentSemIdx];
+    const systemText = `You are StatMate AI, a statistics tutor for University of Hargeisa (UoH) students. The student is currently viewing ${sem.label}. Courses this semester: ${sem.courses.join(', ')||'various'}. Specialise in statistics, R programming, biostatistics, research methods and data analysis. Give clear, practical answers. For R code always provide working commented examples. Be encouraging.`;
 
-  const sem = SEMESTERS[currentSem];
-  const sys = `You are StatMate AI, a statistics tutor for students at the University of Hargeisa (UoH), Faculty of Statistics and Data Science, Somaliland. The student is viewing ${sem.label}. Courses this semester: ${sem.courses.join(', ')}. Help with statistics, R programming, biostatistics, research methods, experimental design, time series, and data analysis. Give clear, practical answers. For R code provide working commented examples. Be encouraging and supportive. Use simple English.`;
-
-  try {
-    const res = await fetch('https://api.pollinations.ai/v1/chat/completions', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'openai-large',
-        messages: [{ role:'system', content:sys }, ...chatHistory],
-        private: true,
-      }),
-    });
-    const data  = await res.json();
-    const reply = data.choices?.[0]?.message?.content || 'Sorry, no response. Please try again.';
-    chatHistory.push({ role:'assistant', content:reply });
-    think.remove();
-    appendMsg('bot', fmtMsg(reply));
-  } catch {
-    think.remove();
-    appendMsg('bot', '<span style="color:#ef4444">Connection error. Check your internet and try again.</span>');
-  }
-
-  btn.disabled = false;
-  inp.focus();
+    try {
+        const res = await fetch('https://api.pollinations.ai/v1/chat/completions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                model: 'openai-large',
+                messages: [
+                    { role: 'system', content: systemText },
+                    ...chatHistory
+                ],
+                private: true
+            })
+        });
+        const data = await res.json();
+        const reply = data.choices?.[0]?.message?.content || 'Sorry, no response. Please try again.';
+        chatHistory.push({ role: 'assistant', content: reply });
+        thinkEl.remove();
+        appendMsg('bot', fmt(reply));
+    } catch {
+        thinkEl.remove();
+        appendMsg('bot', '<span style="color:#ef4444">Connection error. Check your internet and try again.</span>');
+    }
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   CALCULATOR
-═══════════════════════════════════════════════════════════════ */
-let calcExpr = '';
-const $expr = () => document.getElementById('calc-expr');
-const $main = () => document.getElementById('calc-main');
-
-function calcNum(n) { calcExpr += n; calcUpdate(); }
-function calcOp(o)  { calcExpr += o; calcUpdate(); }
-function calcFn(f)  { calcExpr += f; calcUpdate(); }
-function calcClear(){ calcExpr = ''; calcUpdate(); }
-
-function calcUpdate() {
-  $main().textContent = calcExpr || '0';
-  $expr().textContent = '';
+// ── CALCULATOR ────────────────────────────────────────────────────────────────
+let expr = '';
+function calcNum(n) { expr += n; updateCalc(); }
+function calcOp(o)  { expr += o; updateCalc(); }
+function calcFn(f)  { expr += f; updateCalc(); }
+function calcClear(){ expr = ''; updateCalc(); }
+function updateCalc() {
+    document.getElementById('calc-display').textContent = expr || '0';
+    document.getElementById('calc-expr').textContent = expr;
 }
-
 function calcEquals() {
-  try {
-    $expr().textContent = calcExpr;
-    const result = Function('"use strict"; return (' + calcExpr + ')')();
-    const out    = parseFloat(result.toPrecision(12));
-    calcExpr = isFinite(out) ? String(out) : 'Error';
-    $main().textContent = calcExpr;
-  } catch {
-    $main().textContent = 'Error';
-    calcExpr = '';
-    setTimeout(calcClear, 900);
-  }
-}
-
-/* ═══════════════════════════════════════════════════════════════
-   STAT TABLES — jStat critical values
-═══════════════════════════════════════════════════════════════ */
-function switchDist(type, el) {
-  currentDistType = type;
-  document.querySelectorAll('.tbl-tab').forEach(b => b.classList.remove('active'));
-  el.classList.add('active');
-  ['f','t','chi','z'].forEach(d => {
-    document.getElementById('dist-' + d).style.display = d === type ? '' : 'none';
-  });
-  document.getElementById('dist-result').style.display = 'none';
-}
-
-// Numerical methods for critical values
-const jStat = (() => {
-  function lgamma(z) {
-    const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,1.208650973866179e-3,-5.395239384953e-6];
-    let y=z,x=z,t=x+5.5; t-=(x+0.5)*Math.log(t);
-    let s=1.000000000190015; for(let j=0;j<6;j++) s+=c[j]/++y;
-    return -t+Math.log(2.5066282746310005*s/x);
-  }
-  function normalInv(p) {
-    const a=[-3.969683028665376e1,2.209460984245205e2,-2.759285104469687e2,1.383577518672690e2,-3.066479806614716e1,2.506628277459239],
-          b=[-5.447609879822406e1,1.615858368580409e2,-1.556989798598866e2,6.680131188771972e1,-1.328068155288572e1],
-          c=[-7.784894002430293e-3,-3.223964580411365e-1,-2.400758277161838,-.549732539343734e1,4.374664141464968,2.938163982698783],
-          d=[7.784695709041462e-3,3.224671290700398e-1,2.445134137142996,3.754408661907416];
-    const lo=0.02425, hi=1-lo;
-    if(p<lo){const q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/(((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1));}
-    if(p<=hi){const q=p-0.5,r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}
-    const q=Math.sqrt(-2*Math.log(1-p));return-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/(((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1));
-  }
-  function betaInc(x,a,b) {
-    if(x<=0)return 0; if(x>=1)return 1;
-    const lb=lgamma(a)+lgamma(b)-lgamma(a+b), fr=Math.exp(a*Math.log(x)+b*Math.log(1-x)-lb)/a;
-    let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;
-    if(Math.abs(d)<1e-30)d=1e-30; d=1/d; let h=d;
-    for(let m=1;m<=100;m++){
-      let aa=m*(b-m)*x/((qam+2*m)*(a+2*m));
-      d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30)c=1e-30; d=1/d; h*=d*c;
-      aa=-(a+m)*(qab+m)*x/((a+2*m)*(qap+2*m));
-      d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30)c=1e-30; d=1/d; let dl=d*c; h*=dl;
-      if(Math.abs(dl-1)<1e-8)break;
+    try {
+        const result = Function('"use strict"; return (' + expr + ')')();
+        expr = parseFloat(result.toPrecision(10)).toString();
+        updateCalc();
+    } catch {
+        expr = '';
+        document.getElementById('calc-display').textContent = 'Error';
+        setTimeout(calcClear, 800);
     }
-    return fr*h;
-  }
-  function betaInv(p,a,b){
-    let x=0.5,dx;
-    for(let i=0;i<200;i++){const bp=Math.exp((a-1)*Math.log(x)+(b-1)*Math.log(1-x)-(lgamma(a)+lgamma(b)-lgamma(a+b)));dx=(betaInc(x,a,b)-p)/bp;x-=dx;x=Math.max(1e-10,Math.min(1-1e-10,x));if(Math.abs(dx)<1e-8)break;}
-    return x;
-  }
-  function incGamma(a,x){
-    if(x<0)return 0;
-    if(x<a+1){let s=1/a,t=1/a;for(let n=1;n<200;n++){t*=x/(a+n);s+=t;if(Math.abs(t)<1e-10)break;}return s*Math.exp(-x+a*Math.log(x)-lgamma(a));}
-    let b=x+1-a,c=1e30,d=1/b,h=d;
-    for(let i=1;i<=200;i++){const an=-i*(i-a);b+=2;d=an*d+b;if(Math.abs(d)<1e-30)d=1e-30;c=b+an/c;if(Math.abs(c)<1e-30)c=1e-30;d=1/d;const dl=d*c;h*=dl;if(Math.abs(dl-1)<1e-10)break;}
-    return 1-Math.exp(-x+a*Math.log(x)-lgamma(a))*h;
-  }
-  return {
-    zCrit(alpha, two=true){ const a=two?alpha/2:alpha; return (-normalInv(a)).toFixed(4); },
-    tCrit(alpha, df, two=true){
-      const a=two?alpha/2:alpha;
-      let x=betaInv(2*Math.min(a,1-a),df/2,0.5);
-      x=Math.sqrt(df*(1-x)/x); return (a>0.5?x:-x).toFixed(4);
-    },
-    chiCrit(alpha, df){
-      let x=df*Math.pow(1-2/(9*df)+normalInv(1-alpha)*Math.sqrt(2/(9*df)),3);
-      if(x<0)x=0.001;
-      for(let i=0;i<50;i++){const fx=incGamma(df/2,x/2)-(1-alpha),fp=Math.exp((df/2-1)*Math.log(x)-x/2-(df/2)*Math.log(2)-lgamma(df/2));const dx=fx/fp;x-=dx;if(Math.abs(dx)<1e-8)break;}
-      return Math.max(0,x).toFixed(4);
-    },
-    fCrit(alpha, d1, d2){
-      const p=1-alpha;
-      const fC=(x)=>betaInc(d1*x/(d1*x+d2),d1/2,d2/2);
-      const fP=(x)=>{if(x<=0)return 0;const lb=lgamma(d1/2)+lgamma(d2/2)-lgamma((d1+d2)/2);return Math.exp((d1/2)*Math.log(d1)+(d2/2)*Math.log(d2)+(d1/2-1)*Math.log(x)-(d1+d2)/2*Math.log(d2+d1*x)-lb);};
-      let f=1;
-      for(let i=0;i<100;i++){const cdf=fC(f),pdf=fP(f);if(pdf<1e-15)break;const dx=(cdf-p)/pdf;f-=dx;f=Math.max(0.001,f);if(Math.abs(dx)<1e-8)break;}
-      return f.toFixed(4);
-    },
-  };
-})();
+}
 
+// ── STAT TABLES ───────────────────────────────────────────────────────────────
 function calcDist() {
-  let value, label;
-  try {
-    if (currentDistType === 'f') {
-      const a=+document.getElementById('f-alpha').value, d1=+document.getElementById('f-d1').value, d2=+document.getElementById('f-d2').value;
-      value = jStat.fCrit(a, d1, d2);
-      label = `F critical — α=${a}, df₁=${d1}, df₂=${d2}`;
-    } else if (currentDistType === 't') {
-      const a=+document.getElementById('t-alpha').value, df=+document.getElementById('t-df').value, tail=document.getElementById('t-tail').value;
-      value = jStat.tCrit(a, df, tail==='two');
-      label = `t critical — α=${a}, df=${df}, ${tail}-tailed`;
-    } else if (currentDistType === 'chi') {
-      const a=+document.getElementById('chi-alpha').value, df=+document.getElementById('chi-df').value;
-      value = jStat.chiCrit(a, df);
-      label = `χ² critical — α=${a}, df=${df}`;
-    } else {
-      const a=+document.getElementById('z-alpha').value, tail=document.getElementById('z-tail').value;
-      value = jStat.zCrit(a, tail==='two');
-      label = `Z critical — α=${a}, ${tail}-tailed`;
-    }
-  } catch { value='Error'; label='Check your inputs'; }
-
-  document.getElementById('dist-label').textContent = label;
-  document.getElementById('dist-val').textContent   = value;
-  document.getElementById('dist-result').style.display = '';
+    const vals = { z:'1.960', z99:'2.576', t10:'2.228', t20:'2.086', t30:'2.042', f:'3.490', chi5:'11.070', chi10:'18.307' };
+    document.getElementById('dist-result').textContent = vals[document.getElementById('dist-type').value] || '—';
 }
 
-/* ═══════════════════════════════════════════════════════════════
-   BOOT
-═══════════════════════════════════════════════════════════════ */
+// ── BOOT ──────────────────────────────────────────────────────────────────────
 initSidebar();
-selectSem(currentSem);
+setSemester(currentSemIdx);
 </script>
 </body>
 </html>
