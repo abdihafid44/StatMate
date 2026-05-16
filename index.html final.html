@@ -262,11 +262,66 @@ const OPENROUTER_KEY = 'sk-or-v1-35cfd172e7ce748f29eec3ebaf9e3dd12ebb8b277b01a01
 // KEY = folder name in Supabase exactly as created
 // Value = display label shown in sidebar
 const SEMESTERS = [
-    { label: 'Semester 1', folder: 'Semester 1', courses: [] },
-    { label: 'Semester 2', folder: 'Semester 2', courses: [] },
-    { label: 'Semester 3', folder: 'Semester 3', courses: [] },
-    { label: 'Semester 4', folder: 'Semester 4', courses: [] },
-    { label: 'Semester 5', folder: 'Semester 5', courses: [] },
+    {
+        label: 'Semester 1',
+        folder: 'Semester 1',
+        courses: [
+            'Introduction to Statistics and Probability',
+            'Pre-Calculus',
+            'Introduction to Economics',
+            'Freshmen English I',
+            'Arabic Language',
+            'Introduction to Management'
+        ]
+    },
+    {
+        label: 'Semester 2',
+        folder: 'Semester 2',
+        courses: [
+            'Somali Literature',
+            'Computer Application for Statisticians',
+            'Calculus I',
+            'Statistical Inference',
+            'Freshmen English II',
+            'Islamic Studies'
+        ]
+    },
+    {
+        label: 'Semester 3',
+        folder: 'Semester 3',
+        courses: [
+            'Demography I',
+            'Calculus II',
+            'Discrete Mathematics',
+            'Statistical Computing and Data Management I',
+            'Nonparametric Statistical Methods',
+            'Sophomore English I'
+        ]
+    },
+    {
+        label: 'Semester 4',
+        folder: 'Semester 4',
+        courses: [
+            'Linear Algebra',
+            'Demography II',
+            'Mathematical Statistics',
+            'Calculus III',
+            'Sophomore English II',
+            'Computer Programming I - Database Management System'
+        ]
+    },
+    {
+        label: 'Semester 5',
+        folder: 'Semester 5',
+        courses: [
+            'Survey Design and Sampling Techniques',
+            'Computer Programming II - Python',
+            'Operations Research',
+            'Regression Analysis and Econometrics',
+            'Statistical Ethics and Data Field Management',
+            'Entrepreneurship and Small Business Management'
+        ]
+    },
     {
         label: 'Semester 6',
         folder: 'Semester 6',
@@ -279,8 +334,29 @@ const SEMESTERS = [
             'Time Series'
         ]
     },
-    { label: 'Semester 7', folder: 'Semester 7', courses: [] },
-    { label: 'Semester 8', folder: 'Semester 8', courses: [] },
+    {
+        label: 'Semester 7',
+        folder: 'Semester 7',
+        courses: [
+            'Big Data Analytics and Data Mining',
+            'Sociology',
+            'Data Visualization',
+            'Spatial Data Analysis (GIS and Mapping)',
+            'Multivariate Data Analysis',
+            'Project Planning and Management'
+        ]
+    },
+    {
+        label: 'Semester 8',
+        folder: 'Semester 8',
+        courses: [
+            'Statistical Quality Control',
+            'Survival Data Analysis',
+            'Monitoring and Evaluation',
+            'Computer Programming IV - Machine Learning and Deep Learning',
+            'Graduation Thesis'
+        ]
+    },
 ];
 
 let currentSemIdx = 5; // Semester 6 by default
