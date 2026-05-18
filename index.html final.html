@@ -105,26 +105,31 @@
         .btn-eq { background: var(--blue); color: #fff; }
         .btn-eq:hover { background: #1254a0; }
         .btn-wide { grid-column: span 2; }
-        #tab-tables { max-width: 500px; }
-        .tables-shell { background: #fff; border: 1px solid #eef0f4; border-radius: 22px; padding: 2.5rem; }
-        .tables-title { text-align: center; font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-bottom: 1.75rem; }
-        .field-label { font-size: .63rem; font-weight: 700; color: #9aa3b0; letter-spacing: .14em; text-transform: uppercase; margin-bottom: .5rem; display: block; }
-        .dist-select { width: 100%; padding: .85rem 1rem; border-radius: 13px; border: 1.5px solid #e2e8f0; font-family: 'DM Sans', sans-serif; font-size: .88rem; outline: none; background: #f8fafc; transition: border-color .2s; margin-bottom: 1.25rem; }
-        .dist-select:focus { border-color: var(--blue); }
-        .calc-dist-btn { width: 100%; padding: .95rem; background: var(--blue); color: #fff; border: none; border-radius: 13px; font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 700; cursor: pointer; transition: background .2s; }
-        .calc-dist-btn:hover { background: #1254a0; }
-        #dist-result { text-align: center; font-size: 4rem; font-weight: 800; color: var(--blue); letter-spacing: -3px; margin-top: 1.25rem; font-family: 'DM Mono', monospace; min-height: 5rem; }
+        
+        /* ── STAT TABLES ── */
+        .tbl-shell { background: #fff; border: 1px solid #eef0f4; border-radius: 22px; padding: 2.5rem; }
+        .tbl-title { text-align: center; font-size: 1.4rem; font-weight: 700; color: #0f172a; margin-bottom: 1.75rem; }
+        .tbl-tabs { display: flex; gap: .5rem; margin-bottom: 1.5rem; flex-wrap: wrap; }
+        .tbl-tab { padding: .6rem 1.1rem; border-radius: 10px; font-size: .84rem; font-weight: 500; border: 1px solid #e2e8f0; background: transparent; color: #6b7280; cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+        .tbl-tab:hover { border-color: var(--blue); color: var(--blue); }
+        .tbl-tab.active { background: var(--blue-light); border-color: var(--blue); color: var(--blue); font-weight: 600; }
+        .field-label { font-size: .63rem; font-weight: 700; color: #9aa3b0; letter-spacing: .14em; text-transform: uppercase; display: block; margin-bottom: .5rem; }
+        .field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem; }
+        .tbl-select, .tbl-input { width: 100%; padding: .8rem 1rem; border-radius: 12px; border: 1.5px solid #e2e8f0; font-family: 'DM Sans', sans-serif; font-size: .875rem; outline: none; background: #f8fafc; color: #1a1a2e; transition: border-color .2s; }
+        .tbl-select:focus, .tbl-input:focus { border-color: var(--blue); background: #fff; }
+        .lookup-btn { width: 100%; padding: .95rem; background: var(--blue); color: #fff; border: none; border-radius: 13px; font-family: 'DM Sans', sans-serif; font-size: .92rem; font-weight: 700; cursor: pointer; transition: background .2s; margin-top: .5rem; }
+        .lookup-btn:hover { background: #1254a0; }
+        .result-box { background: var(--blue-light); border: 1px solid var(--blue); border-radius: 14px; padding: 1.5rem; text-align: center; margin-top: 1.5rem; }
+        .result-label { font-size: .8rem; color: var(--blue); font-weight: 600; margin-bottom: .5rem; }
+        .result-val { font-family: 'DM Mono', monospace; font-size: 3.5rem; font-weight: 700; color: var(--blue); letter-spacing: -2px; }
+        
         ::-webkit-scrollbar { width: 5px; height: 5px; }
         ::-webkit-scrollbar-thumb { background: #dde3ec; border-radius: 10px; }
-        @media(max-width:700px){
-            aside { display: none; }
-            main { padding: 1.25rem; }
-            .course-grid { grid-template-columns: 1fr; }
-            #tab-calc { max-width: 100%; }
-        }
+        @media(max-width:700px){ aside { display: none; } main { padding: 1.25rem; } .course-grid { grid-template-columns: 1fr; } #tab-calc { max-width: 100%; } }
     </style>
 </head>
 <body>
+
     <header>
         <div class="header-top">
             <div class="logo">
@@ -147,7 +152,6 @@
             <div class="sidebar-label">Academic Years</div>
         </aside>
         <main>
-            <!-- LIBRARY -->
             <div id="tab-library" class="tab-content active">
                 <div class="lib-header">
                     <div>
@@ -162,7 +166,6 @@
                 <div id="course-grid" class="course-grid"></div>
             </div>
 
-            <!-- VIEWER -->
             <div id="tab-viewer" class="tab-content">
                 <div id="reader-frame" class="viewer-empty">
                     <i class="ti ti-file-search"></i>
@@ -170,13 +173,12 @@
                 </div>
             </div>
 
-            <!-- AI CHAT -->
             <div id="tab-ai" class="tab-content">
-                <div class="chat-shell">
+                <div class="chat-shell" style="max-width: 760px;">
                     <div class="chat-header">
                         <div class="chat-avatar">SM</div>
                         <div>
-                            <div class="chat-name">StatMate AI · Gemini</div>
+                            <div class="chat-name">StatMate AI · Gemini Serverless</div>
                             <div class="chat-status">● Calibrated for UoH Statistics curriculum</div>
                         </div>
                     </div>
@@ -184,8 +186,8 @@
                         <div class="msg-bot">
                             <div class="msg-avatar">SM</div>
                             <div class="msg-bubble">
-                                Hello! I'm StatMate AI, calibrated for the University of Hargeisa Statistics curriculum.<br><br>
-                                I can help with <strong>R programming</strong>, statistical concepts, biostatistics, research methodology, and all your Semester 6 courses. What are you working on?
+                                Hello! I'm StatMate AI, secured via Vercel Serverless and calibrated for the University of Hargeisa.<br><br>
+                                I can help with <strong>R programming</strong>, statistical concepts, biostatistics, research methodology, and all your coursework. What are you working on?
                             </div>
                         </div>
                     </div>
@@ -196,7 +198,6 @@
                 </div>
             </div>
 
-            <!-- CALCULATOR -->
             <div id="tab-calc" class="tab-content">
                 <div class="calc-shell">
                     <div class="calc-display">
@@ -229,23 +230,97 @@
                 </div>
             </div>
 
-            <!-- STAT TABLES -->
             <div id="tab-tables" class="tab-content">
-                <div class="tables-shell">
+                <div class="tables-shell" style="max-width: 560px;">
                     <div class="tables-title">Distribution Critical Values</div>
-                    <label class="field-label">Statistical Test</label>
-                    <select id="dist-type" class="dist-select">
-                        <option value="z">Z-Normal (95% CI, α=0.05)</option>
-                        <option value="z99">Z-Normal (99% CI, α=0.01)</option>
-                        <option value="t10">T-Student (df=10, α=0.05)</option>
-                        <option value="t20">T-Student (df=20, α=0.05)</option>
-                        <option value="t30">T-Student (df=30, α=0.05)</option>
-                        <option value="f">F-Snedecor (df1=3, df2=20, α=0.05)</option>
-                        <option value="chi5">Chi-Squared (df=5, α=0.05)</option>
-                        <option value="chi10">Chi-Squared (df=10, α=0.05)</option>
-                    </select>
-                    <button class="calc-dist-btn" onclick="calcDist()">Get Critical Value</button>
-                    <div id="dist-result"></div>
+                    <div class="tbl-tabs">
+                        <button class="tbl-tab active" onclick="switchDist('f',this)">F distribution</button>
+                        <button class="tbl-tab" onclick="switchDist('t',this)">t distribution</button>
+                        <button class="tbl-tab" onclick="switchDist('chi',this)">Chi-square (χ²)</button>
+                        <button class="tbl-tab" onclick="switchDist('z',this)">Z (Normal)</button>
+                    </div>
+
+                    <div id="dist-f">
+                        <div class="field-grid">
+                            <div>
+                                <label class="field-label">Significance (α)</label>
+                                <select id="f-alpha" class="tbl-select">
+                                    <option>0.001</option><option>0.005</option><option>0.01</option>
+                                    <option>0.025</option><option selected>0.05</option><option>0.10</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="field-label">df₁ (numerator)</label>
+                                <input id="f-d1" class="tbl-input" type="number" min="1" value="3" />
+                            </div>
+                        </div>
+                        <label class="field-label">df₂ (denominator)</label>
+                        <input id="f-d2" class="tbl-input" type="number" min="1" value="20" style="max-width:50%" />
+                    </div>
+
+                    <div id="dist-t" style="display:none">
+                        <div class="field-grid">
+                            <div>
+                                <label class="field-label">Significance (α)</label>
+                                <select id="t-alpha" class="tbl-select">
+                                    <option>0.001</option><option>0.005</option><option>0.01</option>
+                                    <option>0.025</option><option selected>0.05</option><option>0.10</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="field-label">Degrees of freedom (df)</label>
+                                <input id="t-df" class="tbl-input" type="number" min="1" value="10" />
+                            </div>
+                        </div>
+                        <label class="field-label">Tail type</label>
+                        <select id="t-tail" class="tbl-select" style="max-width:50%">
+                            <option value="two">Two-tailed</option>
+                            <option value="one">One-tailed</option>
+                        </select>
+                    </div>
+
+                    <div id="dist-chi" style="display:none">
+                        <div class="field-grid">
+                            <div>
+                                <label class="field-label">Significance (α)</label>
+                                <select id="chi-alpha" class="tbl-select">
+                                    <option>0.001</option><option>0.005</option><option>0.01</option>
+                                    <option>0.025</option><option selected>0.05</option><option>0.10</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="field-label">Degrees of freedom (df)</label>
+                                <input id="chi-df" class="tbl-input" type="number" min="1" value="5" />
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="dist-z" style="display:none">
+                        <div class="field-grid">
+                            <div>
+                                <label class="field-label">Significance (α)</label>
+                                <select id="z-alpha" class="tbl-select">
+                                    <option>0.001</option><option>0.005</option><option>0.01</option>
+                                    <option>0.025</option><option selected>0.05</option><option>0.10</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="field-label">Tail type</label>
+                                <select id="z-tail" class="tbl-select">
+                                    <option value="two">Two-tailed</option>
+                                    <option value="one">One-tailed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="lookup-btn" onclick="calcDist()">
+                        <i class="ti ti-search" style="margin-right:.4rem"></i>Find Critical Value
+                    </button>
+                    <div id="dist-result" style="display:none" class="result-box">
+                        <div class="result-label" id="dist-label"></div>
+                        <div class="result-val" id="dist-val"></div>
+                    </div>
                 </div>
             </div>
         </main>
@@ -256,111 +331,22 @@
 const SUPA_URL   = 'https://dedyworlrfalwoujwkyx.supabase.co';
 const SUPA_KEY   = 'sb_publishable_iqOfs6uyLmIV7PSmuOdHuQ_IXe_Fc88';
 const BUCKET     = 'course-materials';
-const OPENROUTER_KEY = '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';
 
 // ── CURRICULUM MAP ───────────────────────────────────────────────────────────
-// KEY = folder name in Supabase exactly as created
-// Value = display label shown in sidebar
 const SEMESTERS = [
-    {
-        label: 'Semester 1',
-        folder: 'Semester 1',
-        courses: [
-            'Introduction to Statistics and Probability',
-            'Pre-Calculus',
-            'Introduction to Economics',
-            'Freshmen English I',
-            'Arabic Language',
-            'Introduction to Management'
-        ]
-    },
-    {
-        label: 'Semester 2',
-        folder: 'Semester 2',
-        courses: [
-            'Somali Literature',
-            'Computer Application for Statisticians',
-            'Calculus I',
-            'Statistical Inference',
-            'Freshmen English II',
-            'Islamic Studies'
-        ]
-    },
-    {
-        label: 'Semester 3',
-        folder: 'Semester 3',
-        courses: [
-            'Demography I',
-            'Calculus II',
-            'Discrete Mathematics',
-            'Statistical Computing and Data Management I',
-            'Nonparametric Statistical Methods',
-            'Sophomore English I'
-        ]
-    },
-    {
-        label: 'Semester 4',
-        folder: 'Semester 4',
-        courses: [
-            'Linear Algebra',
-            'Demography II',
-            'Mathematical Statistics',
-            'Calculus III',
-            'Sophomore English II',
-            'Computer Programming I - Database Management System'
-        ]
-    },
-    {
-        label: 'Semester 5',
-        folder: 'Semester 5',
-        courses: [
-            'Survey Design and Sampling Techniques',
-            'Computer Programming II - Python',
-            'Operations Research',
-            'Regression Analysis and Econometrics',
-            'Statistical Ethics and Data Field Management',
-            'Entrepreneurship and Small Business Management'
-        ]
-    },
-    {
-        label: 'Semester 6',
-        folder: 'Semester 6',
-        courses: [
-            'Biostatistics',
-            'Data Computing R',
-            'Data Stuctures & Algorithm',
-            'Experimental Design',
-            'Research Methadology',
-            'Time Series'
-        ]
-    },
-    {
-        label: 'Semester 7',
-        folder: 'Semester 7',
-        courses: [
-            'Big Data Analytics and Data Mining',
-            'Sociology',
-            'Data Visualization',
-            'Spatial Data Analysis (GIS and Mapping)',
-            'Multivariate Data Analysis',
-            'Project Planning and Management'
-        ]
-    },
-    {
-        label: 'Semester 8',
-        folder: 'Semester 8',
-        courses: [
-            'Statistical Quality Control',
-            'Survival Data Analysis',
-            'Monitoring and Evaluation',
-            'Computer Programming IV - Machine Learning and Deep Learning',
-            'Graduation Thesis'
-        ]
-    },
+    { label: 'Year 1 · Sem 1', folder: 'Semester 1', courses: ['Introduction to Statistics and Probability', 'Pre-Calculus', 'Introduction to Economics', 'Freshmen English I', 'Arabic Language', 'Introduction to Management'] },
+    { label: 'Year 1 · Sem 2', folder: 'Semester 2', courses: ['Somali Literature', 'Computer Application for Statisticians', 'Calculus I', 'Statistical Inference', 'Freshmen English II', 'Islamic Studies'] },
+    { label: 'Year 2 · Sem 1', folder: 'Semester 3', courses: ['Demography I', 'Calculus II', 'Discrete Mathematics', 'Statistical Computing and Data Management I', 'Nonparametric Statistical Methods', 'Sophomore English I'] },
+    { label: 'Year 2 · Sem 2', folder: 'Semester 4', courses: ['Linear Algebra', 'Demography II', 'Mathematical Statistics', 'Calculus III', 'Sophomore English II', 'Computer Programming I - Database Management System'] },
+    { label: 'Year 3 · Sem 1', folder: 'Semester 5', courses: ['Survey Design and Sampling Techniques', 'Computer Programming II - Python', 'Operations Research', 'Regression Analysis and Econometrics', 'Statistical Ethics and Data Field Management', 'Entrepreneurship and Small Business Management'] },
+    { label: 'Year 3 · Sem 2', folder: 'Semester 6', courses: ['Biostatistics', 'Data Computing R', 'Data Stuctures & Algorithm', 'Experimental Design', 'Research Methadology', 'Time Series'] },
+    { label: 'Year 4 · Sem 1', folder: 'Semester 7', courses: ['Big Data Analytics and Data Mining', 'Sociology', 'Data Visualization', 'Spatial Data Analysis (GIS and Mapping)', 'Multivariate Data Analysis', 'Project Planning and Management'] },
+    { label: 'Year 4 · Sem 2', folder: 'Semester 8', courses: ['Statistical Quality Control', 'Survival Data Analysis', 'Monitoring and Evaluation', 'Computer Programming IV - Machine Learning and Deep Learning', 'Graduation Thesis'] },
 ];
 
-let currentSemIdx = 5; // Semester 6 by default
+let currentSemIdx = 5; // Year 3 Sem 2 by default
 let chatHistory = [];
+let currentDistType = 'f';
 
 // ── TABS ─────────────────────────────────────────────────────────────────────
 function showTab(id) {
@@ -399,13 +385,7 @@ async function renderLibrary(idx) {
     grid.innerHTML = `<div class="loading-grid"><div class="spinner"></div><p style="color:#94a3b8;font-size:.85rem">Loading ${sem.label}…</p></div>`;
 
     if (!sem.courses.length) {
-        // Auto-discover courses by listing subfolders
-        const items = await fetchCloudFiles(sem.folder + '/');
-        sem.courses = items.filter(i => !i.id && i.name !== '.emptyFolderPlaceholder').map(i => i.name);
-    }
-
-    if (!sem.courses.length) {
-        grid.innerHTML = `<div class="loading-grid"><p style="color:#94a3b8">No courses uploaded yet for ${sem.label}.</p></div>`;
+        grid.innerHTML = `<div class="loading-grid"><p style="color:#94a3b8">No courses mapped yet for ${sem.label}.</p></div>`;
         return;
     }
 
@@ -413,7 +393,6 @@ async function renderLibrary(idx) {
     grid.innerHTML = cards.join('');
 }
 
-// ── CARD BUILDER (scans 3 levels deep: course → subfolder → week → file) ─────
 async function buildCard(semFolder, course) {
     const folderPath = `${semFolder}/${course}/`;
     const allFiles = [];
@@ -450,25 +429,21 @@ async function buildCard(semFolder, course) {
     </div>`;
 }
 
-// Recursively scan up to 3 levels deep
 async function scanFolder(prefix, labelPrefix, allFiles, depth) {
     if (depth > 3) return;
     const items = await fetchCloudFiles(prefix);
     for (const item of items) {
         if (!item || item.name === '.emptyFolderPlaceholder') continue;
         if (item.id) {
-            // It's a file
             const label = labelPrefix ? `${labelPrefix} · ${item.name}` : item.name;
             allFiles.push({ label, path: `${prefix}${item.name}` });
         } else {
-            // It's a subfolder — go deeper
             const subLabel = labelPrefix ? `${labelPrefix} / ${item.name}` : item.name;
             await scanFolder(`${prefix}${item.name}/`, subLabel, allFiles, depth + 1);
         }
     }
 }
 
-// ── SUPABASE FETCH ────────────────────────────────────────────────────────────
 async function fetchCloudFiles(prefix) {
     try {
         const res = await fetch(`${SUPA_URL}/storage/v1/object/list/${BUCKET}`, {
@@ -481,7 +456,6 @@ async function fetchCloudFiles(prefix) {
     } catch { return []; }
 }
 
-// ── DOCUMENT VIEWER ───────────────────────────────────────────────────────────
 function openDocument(path) {
     const url = `${SUPA_URL}/storage/v1/object/public/${BUCKET}/${path.split('/').map(encodeURIComponent).join('/')}`;
     const ext = path.split('.').pop().toLowerCase();
@@ -508,7 +482,7 @@ function filterCards() {
     });
 }
 
-// ── AI CHAT (GEMINI) ──────────────────────────────────────────────────────────
+// ── SECURE AI CHAT (Vercel Serverless) ──────────────────────────────────────────
 function appendMsg(role, html) {
     const box = document.getElementById('ai-messages');
     const isUser = role === 'user';
@@ -532,6 +506,7 @@ async function sendChat() {
     const input = document.getElementById('ai-input');
     const text = input.value.trim();
     if (!text) return;
+    
     input.value = '';
     appendMsg('user', text.replace(/</g,'&lt;').replace(/>/g,'&gt;'));
     chatHistory.push({ role: 'user', content: text });
@@ -547,26 +522,29 @@ async function sendChat() {
     const systemText = `You are StatMate AI, a statistics tutor for University of Hargeisa (UoH) students. The student is currently viewing ${sem.label}. Courses this semester: ${sem.courses.join(', ')||'various'}. Specialise in statistics, R programming, biostatistics, research methods and data analysis. Give clear, practical answers. For R code always provide working commented examples. Be encouraging.`;
 
     try {
-        const res = await fetch('https://api.pollinations.ai/v1/chat/completions', {
+        const res = await fetch('/api/chat', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
-                model: 'openai-large',
-                messages: [
-                    { role: 'system', content: systemText },
-                    ...chatHistory
-                ],
-                private: true
+                system: systemText,
+                messages: chatHistory
             })
         });
+        
         const data = await res.json();
-        const reply = data.choices?.[0]?.message?.content || 'Sorry, no response. Please try again.';
+        
+        if (!res.ok) {
+            throw new Error(data.error || 'Server error');
+        }
+        
+        const reply = data.reply || 'Sorry, no response. Please try again.';
         chatHistory.push({ role: 'assistant', content: reply });
         thinkEl.remove();
         appendMsg('bot', fmt(reply));
-    } catch {
+    } catch (err) {
         thinkEl.remove();
-        appendMsg('bot', '<span style="color:#ef4444">Connection error. Check your internet and try again.</span>');
+        appendMsg('bot', '<span style="color:#ef4444">Connection error. Check your backend configuration and try again.</span>');
+        console.error(err);
     }
 }
 
@@ -592,15 +570,41 @@ function calcEquals() {
     }
 }
 
-// ── STAT TABLES ───────────────────────────────────────────────────────────────
-function calcDist() {
-    const vals = { z:'1.960', z99:'2.576', t10:'2.228', t20:'2.086', t30:'2.042', f:'3.490', chi5:'11.070', chi10:'18.307' };
-    document.getElementById('dist-result').textContent = vals[document.getElementById('dist-type').value] || '—';
+// ── STAT TABLES (jStat Dynamic) ────────────────────────────────────────────────
+function switchDist(type, el) {
+    currentDistType = type;
+    document.querySelectorAll('.tbl-tab').forEach(b => b.classList.remove('active'));
+    el.classList.add('active');
+    ['f','t','chi','z'].forEach(d => {
+        document.getElementById('dist-' + d).style.display = d === type ? '' : 'none';
+    });
+    document.getElementById('dist-result').style.display = 'none';
 }
 
-// ── BOOT ──────────────────────────────────────────────────────────────────────
-initSidebar();
-setSemester(currentSemIdx);
-</script>
-</body>
-</html>
+const jStat = (() => {
+    function lgamma(z) {
+        const c=[76.18009172947146,-86.50532032941677,24.01409824083091,-1.231739572450155,1.208650973866179e-3,-5.395239384953e-6];
+        let y=z,x=z,t=x+5.5; t-=(x+0.5)*Math.log(t);
+        let s=1.000000000190015; for(let j=0;j<6;j++) s+=c[j]/++y;
+        return -t+Math.log(2.5066282746310005*s/x);
+    }
+    function normalInv(p) {
+        const a=[-3.969683028665376e1,2.209460984245205e2,-2.759285104469687e2,1.383577518672690e2,-3.066479806614716e1,2.506628277459239],
+              b=[-5.447609879822406e1,1.615858368580409e2,-1.556989798598866e2,6.680131188771972e1,-1.328068155288572e1],
+              c=[-7.784894002430293e-3,-3.223964580411365e-1,-2.400758277161838,-.549732539343734e1,4.374664141464968,2.938163982698783],
+              d=[7.784695709041462e-3,3.224671290700398e-1,2.445134137142996,3.754408661907416];
+        const lo=0.02425, hi=1-lo;
+        if(p<lo){const q=Math.sqrt(-2*Math.log(p));return(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/(((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1));}
+        if(p<=hi){const q=p-0.5,r=q*q;return(((((a[0]*r+a[1])*r+a[2])*r+a[3])*r+a[4])*r+a[5])*q/(((((b[0]*r+b[1])*r+b[2])*r+b[3])*r+b[4])*r+1);}
+        const q=Math.sqrt(-2*Math.log(1-p));return-(((((c[0]*q+c[1])*q+c[2])*q+c[3])*q+c[4])*q+c[5])/(((((d[0]*q+d[1])*q+d[2])*q+d[3])*q+1));
+    }
+    function betaInc(x,a,b) {
+        if(x<=0)return 0; if(x>=1)return 1;
+        const lb=lgamma(a)+lgamma(b)-lgamma(a+b), fr=Math.exp(a*Math.log(x)+b*Math.log(1-x)-lb)/a;
+        let qab=a+b,qap=a+1,qam=a-1,c=1,d=1-qab*x/qap;
+        if(Math.abs(d)<1e-30)d=1e-30; d=1/d; let h=d;
+        for(let m=1;m<=100;m++){
+            let aa=m*(b-m)*x/((qam+2*m)*(a+2*m));
+            d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30)c=1e-30; d=1/d; h*=d*c;
+            aa=-(a+m)*(qab+m)*x/((a+2*m)*(qap+2*m));
+            d=1+aa*d; if(Math.abs(d)<1e-30)d=1e-30; c=1+aa/c; if(Math.abs(c)<1e-30
