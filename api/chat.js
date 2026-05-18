@@ -8,7 +8,7 @@ export default async function handler(req, res) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'openai-large',
+        model: 'openai',
         messages: [
           { role: 'system', content: system },
           ...messages
