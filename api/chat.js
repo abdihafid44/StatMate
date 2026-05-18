@@ -4,7 +4,7 @@ export default async function handler(req, res) {
   const { system, messages } = req.body;
 
   try {
-    const response = await fetch('https://api.pollinations.ai/v1/chat/completions', {
+    const response = await fetch('https://text.pollinations.ai/openai', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
@@ -12,14 +12,29 @@ export default async function handler(req, res) {
         messages: [
           { role: 'system', content: system },
           ...messages
-        ],
-        private: true
+        ]
       })
     });
-    const data = await response.json();
-    const reply = data.choices?.[0]?.message?.content || 'No response.';
+
+    const text = await response.text();
+
+    // Try parsing as JSON first
+    let reply;
+    try {
+      const data = JSON.parse(text);
+      reply = data.choices?.[0]?.message?.content || data.text || data.response || text;
+    } catch {
+      // Pollinations sometimes returns plain text directly
+      reply = text;
+    }
+
+    if (!reply || reply.trim() === '') {
+      return res.status(200).json({ reply: 'No response from AI. Please try again.' });
+    }
+
     res.status(200).json({ reply });
   } catch (e) {
-    res.status(500).json({ error: 'AI request failed: ' + e.message });
+    console.error('AI error:', e.message);
+    res.status(500).json({ error: e.message });
   }
 }
