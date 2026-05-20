@@ -4,37 +4,29 @@ export default async function handler(req, res) {
   const { system, messages } = req.body;
 
   try {
-    const response = await fetch('https://text.pollinations.ai/openai', {
+    const response = await fetch('https://text.pollinations.ai/', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'openai',
         messages: [
           { role: 'system', content: system },
           ...messages
-        ]
+        ],
+        model: 'openai',
+        seed: 42,
+        jsonMode: false
       })
     });
 
-    const text = await response.text();
-
-    // Try parsing as JSON first
-    let reply;
-    try {
-      const data = JSON.parse(text);
-      reply = data.choices?.[0]?.message?.content || data.text || data.response || text;
-    } catch {
-      // Pollinations sometimes returns plain text directly
-      reply = text;
+    if (!response.ok) {
+      const err = await response.text();
+      return res.status(500).json({ error: err });
     }
 
-    if (!reply || reply.trim() === '') {
-      return res.status(200).json({ reply: 'No response from AI. Please try again.' });
-    }
+    const reply = await response.text();
+    return res.status(200).json({ reply: reply.trim() });
 
-    res.status(200).json({ reply });
   } catch (e) {
-    console.error('AI error:', e.message);
-    res.status(500).json({ error: e.message });
+    return res.status(500).json({ error: e.message });
   }
 }
