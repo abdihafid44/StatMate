@@ -1,61 +1,51 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method Not Allowed' });
+    return res.status(405).json({ error: 'Method not allowed' });
   }
 
+  const { system = '', messages = [] } = req.body || {};
+  if (!Array.isArray(messages) || !messages.length) {
+    return res.status(400).json({ error: 'No messages' });
+  }
+
+  const GEMINI_KEY = process.env.GEMINI_API_KEY;
+  if (!GEMINI_KEY) {
+    return res.status(500).json({ error: 'GEMINI_API_KEY not set in Vercel environment variables' });
+  }
+
+  const contents = messages.map(m => ({
+    role: m.role === 'assistant' ? 'model' : 'user',
+    parts: [{ text: m.content }]
+  }));
+
   try {
-    const { system, messages } = req.body || {};
+    const response = await fetch(
+      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          system_instruction: { parts: [{ text: system }] },
+          contents
+        })
+      }
+    );
 
-    if (!Array.isArray(messages) || !messages.length) {
-      return res.status(200).json({ reply: 'No messages were sent to the AI.' });
+    const data = await response.json();
+
+    if (!response.ok) {
+      const msg = data.error?.message || JSON.stringify(data.error) || `Gemini returned ${response.status}`;
+      return res.status(500).json({ error: `Google API Error: ${msg}` });
     }
 
-    const apiKey = process.env.GEMINI_API_KEY;
-
-    // 1. Strict check for your Vercel API Key
-    if (!apiKey) {
-      return res.status(200).json({ reply: '⚙️ Configuration Error: GEMINI_API_KEY is missing in Vercel Environment Variables.' });
+    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    if (!reply.trim()) {
+      return res.status(500).json({ error: 'Gemini returned no content' });
     }
 
-    // 2. Format messages for Gemini
-    const formattedMessages = messages.map(msg => ({
-      role: msg.role === 'assistant' ? 'model' : 'user',
-      parts: [{ text: msg.content || "" }]
-    }));
+    return res.status(200).json({ reply: reply.trim() });
 
-    // 3. Connect directly to Google Gemini 1.5 Flash
-    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        systemInstruction: { parts: [{ text: system || "You are a helpful statistics tutor." }] },
-        contents: formattedMessages
-      })
-    });
-
-    const raw = await response.text();
-    let data = {};
-    try {
-      data = JSON.parse(raw);
-    } catch {
-      return res.status(200).json({ reply: `☁️ Google API Error: Could not parse response.` });
-    }
-
-    // 4. Catch Google-specific errors
-    if (data.error) {
-      return res.status(200).json({ reply: `☁️ Google API Error: ${data.error.message}` });
-    }
-
-    // 5. Send the successful text back
-    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
-
-    return res.status(200).json({ 
-        reply: text,
-        choices: [{ message: { role: "assistant", content: text } }]
-    });
-
-  } catch (error) {
-    console.error('Serverless Error:', error);
-    return res.status(200).json({ reply: `🚨 Server Error: ${error.message}` });
+  } catch (e) {
+    return res.status(500).json({ error: e.message });
   }
 }
