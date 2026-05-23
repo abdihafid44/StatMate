@@ -3,12 +3,10 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
   const { system = '', messages = [] } = req.body || {};
-  if (!messages.length) return res.status(400).json({ error: 'No messages' });
-  const payload = {
-    model: 'openai',
-    messages: [{ role: 'system', content: system }, ...messages],
-    private: true
-  };
+  if (!Array.isArray(messages) || !messages.length) {
+    return res.status(400).json({ error: 'No messages' });
+  }
+  const chatMessages = [{ role: 'system', content: system }, ...messages];
   const endpoints = [
     'https://gen.pollinations.ai/v1/chat/completions',
     'https://text.pollinations.ai/openai'
@@ -19,15 +17,17 @@ export default async function handler(req, res) {
       const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
+        body: JSON.stringify({
+          model: 'openai',
+          messages: chatMessages,
+          private: true
+        })
       });
-      const text = await response.text();
-      let data = text;
-      try { data = JSON.parse(text); } catch { /* plain text response */ }
+      const raw = await response.text();
+      let data = raw;
+      try { data = JSON.parse(raw); } catch {}
       if (!response.ok) {
-        lastError = typeof data === 'object'
-          ? data.error?.message || data.error || `${url} returned ${response.status}`
-          : `${url} returned ${response.status}: ${text.slice(0, 160)}`;
+        lastError = `${url} returned ${response.status}: ${raw.slice(0, 200)}`;
         continue;
       }
       const reply =
@@ -39,15 +39,26 @@ export default async function handler(req, res) {
         data.answer ||
         '';
       if (reply.trim()) {
-        return res.status(200).json({
-          reply: reply.trim(),
-          choices: [{ message: { role: 'assistant', content: reply.trim() } }]
-        });
+        return res.status(200).json({ reply: reply.trim() });
       }
-      lastError = `${url} returned no content`;
+      lastError = `${url} returned no readable content`;
     } catch (e) {
-      lastError = e.message;
+      lastError = `${url} failed: ${e.message}`;
     }
   }
-  return res.status(500).json({ error: lastError || 'All endpoints failed' });
+  // Final plain-text GET fallback
+  try {
+    const prompt = encodeURIComponent(
+      `${system}\n\n${messages.map(m => `${m.role}: ${m.content}`).join('\n')}\nassistant:`
+    );
+    const response = await fetch(`https://text.pollinations.ai/${prompt}`);
+    const text = await response.text();
+    if (response.ok && text.trim()) {
+      return res.status(200).json({ reply: text.trim() });
+    }
+    lastError = `text fallback returned ${response.status}: ${text.slice(0, 200)}`;
+  } catch (e) {
+    lastError = `text fallback failed: ${e.message}`;
+  }
+  return res.status(500).json({ error: lastError || 'All AI endpoints failed' });
 }
