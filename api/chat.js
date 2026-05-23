@@ -1,64 +1,61 @@
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(405).json({ error: 'Method not allowed' });
+    return res.status(405).json({ error: 'Method Not Allowed' });
   }
-  const { system = '', messages = [] } = req.body || {};
-  if (!Array.isArray(messages) || !messages.length) {
-    return res.status(400).json({ error: 'No messages' });
-  }
-  const chatMessages = [{ role: 'system', content: system }, ...messages];
-  const endpoints = [
-    'https://gen.pollinations.ai/v1/chat/completions',
-    'https://text.pollinations.ai/openai'
-  ];
-  let lastError = '';
-  for (const url of endpoints) {
-    try {
-      const response = await fetch(url, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: 'openai',
-          messages: chatMessages,
-          private: true
-        })
-      });
-      const raw = await response.text();
-      let data = raw;
-      try { data = JSON.parse(raw); } catch {}
-      if (!response.ok) {
-        lastError = `${url} returned ${response.status}: ${raw.slice(0, 200)}`;
-        continue;
-      }
-      const reply =
-        (typeof data === 'string' && data.trim()) ||
-        data.choices?.[0]?.message?.content ||
-        data.reply ||
-        data.text ||
-        data.response ||
-        data.answer ||
-        '';
-      if (reply.trim()) {
-        return res.status(200).json({ reply: reply.trim() });
-      }
-      lastError = `${url} returned no readable content`;
-    } catch (e) {
-      lastError = `${url} failed: ${e.message}`;
-    }
-  }
-  // Final plain-text GET fallback
+
   try {
-    const prompt = encodeURIComponent(
-      `${system}\n\n${messages.map(m => `${m.role}: ${m.content}`).join('\n')}\nassistant:`
-    );
-    const response = await fetch(`https://text.pollinations.ai/${prompt}`);
-    const text = await response.text();
-    if (response.ok && text.trim()) {
-      return res.status(200).json({ reply: text.trim() });
+    const { system, messages } = req.body || {};
+
+    if (!Array.isArray(messages) || !messages.length) {
+      return res.status(200).json({ reply: 'No messages were sent to the AI.' });
     }
-    lastError = `text fallback returned ${response.status}: ${text.slice(0, 200)}`;
-  } catch (e) {
-    lastError = `text fallback failed: ${e.message}`;
+
+    const apiKey = process.env.GEMINI_API_KEY;
+
+    // 1. Strict check for your Vercel API Key
+    if (!apiKey) {
+      return res.status(200).json({ reply: '⚙️ Configuration Error: GEMINI_API_KEY is missing in Vercel Environment Variables.' });
+    }
+
+    // 2. Format messages for Gemini
+    const formattedMessages = messages.map(msg => ({
+      role: msg.role === 'assistant' ? 'model' : 'user',
+      parts: [{ text: msg.content || "" }]
+    }));
+
+    // 3. Connect directly to Google Gemini 1.5 Flash
+    const response = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        systemInstruction: { parts: [{ text: system || "You are a helpful statistics tutor." }] },
+        contents: formattedMessages
+      })
+    });
+
+    const raw = await response.text();
+    let data = {};
+    try {
+      data = JSON.parse(raw);
+    } catch {
+      return res.status(200).json({ reply: `☁️ Google API Error: Could not parse response.` });
+    }
+
+    // 4. Catch Google-specific errors
+    if (data.error) {
+      return res.status(200).json({ reply: `☁️ Google API Error: ${data.error.message}` });
+    }
+
+    // 5. Send the successful text back
+    const text = data.candidates?.[0]?.content?.parts?.[0]?.text || "Sorry, I couldn't generate a response.";
+
+    return res.status(200).json({ 
+        reply: text,
+        choices: [{ message: { role: "assistant", content: text } }]
+    });
+
+  } catch (error) {
+    console.error('Serverless Error:', error);
+    return res.status(200).json({ reply: `🚨 Server Error: ${error.message}` });
   }
-  return res.status(500).json({ error: lastError || 'All AI endpoints failed' });
 }
