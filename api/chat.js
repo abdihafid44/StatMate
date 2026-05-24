@@ -30,7 +30,7 @@ export default async function handler(req, res) {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'llama3-8b-8192', // Blazing fast, free model
+        model: 'llama-3.1-8b-instant', // Blazing fast, free model
         messages: formattedMessages
       })
     });
