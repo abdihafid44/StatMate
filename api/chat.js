@@ -8,56 +8,53 @@ export default async function handler(req, res) {
     return res.status(200).json({ reply: 'No messages were sent to the AI.' });
   }
 
-  const GEMINI_KEY = process.env.GEMINI_API_KEY;
-  if (!GEMINI_KEY) {
-    return res.status(500).json({ error: 'GEMINI_API_KEY not set in Vercel environment variables' });
+  const GROQ_KEY = process.env.GROQ_API_KEY;
+  if (!GROQ_KEY) {
+    return res.status(500).json({ error: 'GROQ_API_KEY not set in Vercel environment variables' });
   }
 
-  const contents = messages.map(m => ({
-    role: m.role === 'assistant' ? 'model' : 'user',
-    parts: [{ text: m.content || '' }]
-  }));
+  // Formatting messages for Groq (OpenAI standard)
+  const formattedMessages = [];
+  if (system) {
+    formattedMessages.push({ role: 'system', content: system });
+  }
+  messages.forEach(m => {
+    formattedMessages.push({ role: m.role, content: m.content || '' });
+  });
 
   try {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          system_instruction: { parts: [{ text: system }] },
-          contents
-        })
-      }
-    );
+    const response = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${GROQ_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama3-8b-8192', // Blazing fast, free model
+        messages: formattedMessages
+      })
+    });
 
     const raw = await response.text();
     let data = {};
     try {
       data = raw ? JSON.parse(raw) : {};
     } catch {
-      return res.status(200).json({
-        reply: 'Google API Error: Could not parse the Gemini response. Please try again.'
-      });
+      return res.status(200).json({ reply: 'API Error: Could not parse response.' });
     }
 
-    // Friendly error for Quota / Rate Limits
-    if (response.status === 429 || data.error?.message?.includes('Quota exceeded')) {
-      return res.status(200).json({
-        reply: '⏳ **StatMate is currently very busy!** Too many students are asking questions at once, or the Gemini project has no available quota. Please wait about 30 seconds and try again. If this keeps happening, the project owner needs to enable billing or increase Gemini API quota.'
-      });
+    if (response.status === 429) {
+      return res.status(200).json({ reply: '⏳ **StatMate is busy!** Please wait a moment and try again.' });
     }
 
-    // Catch other API errors
     if (!response.ok) {
-      const msg = data.error?.message || JSON.stringify(data.error) || `Gemini returned ${response.status}`;
-      return res.status(500).json({ error: `Google API Error: ${msg}` });
+      const msg = data.error?.message || `API returned ${response.status}`;
+      return res.status(500).json({ error: `Groq API Error: ${msg}` });
     }
 
-    // Extract successful response
-    const reply = data.candidates?.[0]?.content?.parts?.[0]?.text || '';
+    const reply = data.choices?.[0]?.message?.content || '';
     if (!reply.trim()) {
-      return res.status(500).json({ error: 'Gemini returned no content' });
+      return res.status(500).json({ error: 'AI returned no content' });
     }
 
     return res.status(200).json({ reply: reply.trim() });
