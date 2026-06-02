@@ -1,1 +1,644 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>StatMate — University of Hargeisa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Mono:wght@300;400&display=swap" rel="stylesheet" />
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+  :root {
+    --ink: #0f1412;
+    --ink-muted: #4a5550;
+    --ink-faint: #8a9490;
+    --paper: #f7f5f0;
+    --paper-warm: #edeae2;
+    --accent: #1a6b4a;
+    --accent-light: #d4efe3;
+    --accent-deep: #0d3d29;
+    --rule: rgba(15,20,18,0.12);
+    --font-serif: 'Crimson Pro', Georgia, serif;
+    --font-mono: 'DM Mono', monospace;
+  }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-serif);
+    font-size: 18px;
+    line-height: 1.7;
+    min-height: 100vh;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 1.25rem 3rem;
+    background: rgba(247,245,240,0.88);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .nav-logo {
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+
+  .logo-mark {
+    width: 32px; height: 32px; border-radius: 6px;
+    background: var(--accent);
+    display: flex; align-items: center; justify-content: center;
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.05em;
+  }
+
+  .nav-wordmark {
+    font-size: 15px;
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+
+  .nav-links {
+    display: flex; align-items: center; gap: 2.5rem;
+  }
+
+  .nav-links a {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--ink-muted);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .nav-links a:hover { color: var(--accent); }
+
+  .btn-enter {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    background: var(--accent);
+    color: #fff;
+    border: none;
+    padding: 0.55rem 1.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-enter:hover { background: var(--accent-deep); transform: translateY(-1px); }
+  .btn-enter:active { transform: translateY(0); }
+
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    padding: 6rem 3rem 4rem;
+    gap: 4rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .hero-text { max-width: 520px; }
+
+  .hero-eyebrow {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .hero-eyebrow::before {
+    content: '';
+    display: block; width: 28px; height: 1px;
+    background: var(--accent);
+  }
+
+  h1 {
+    font-size: clamp(2.8rem, 5vw, 4.2rem);
+    font-weight: 300;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    margin-bottom: 1.5rem;
+    color: var(--ink);
+  }
+  h1 em { font-style: italic; color: var(--accent); }
+
+  .hero-sub {
+    font-size: 1.05rem;
+    line-height: 1.75;
+    color: var(--ink-muted);
+    margin-bottom: 2.5rem;
+    max-width: 420px;
+  }
+
+  .hero-cta {
+    display: flex; align-items: center; gap: 1.25rem;
+  }
+
+  .btn-primary {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--accent);
+    color: #fff;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    text-decoration: none;
+    padding: 0.85rem 2rem;
+    border-radius: 4px;
+    transition: background 0.2s, transform 0.15s;
+    border: none; cursor: pointer;
+  }
+  .btn-primary:hover { background: var(--accent-deep); transform: translateY(-2px); }
+  .btn-primary:active { transform: translateY(0); }
+
+  .btn-ghost {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+    text-decoration: none;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 2px;
+    transition: color 0.2s, border-color 0.2s;
+  }
+  .btn-ghost:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── HERO VISUAL ── */
+  .hero-visual {
+    display: flex; flex-direction: column; gap: 0.75rem;
+  }
+
+  .stat-card {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    padding: 1.25rem 1.5rem;
+    display: flex; align-items: center; gap: 1rem;
+    animation: slideIn 0.6s ease both;
+  }
+  .stat-card:nth-child(2) { animation-delay: 0.1s; margin-left: 1.5rem; }
+  .stat-card:nth-child(3) { animation-delay: 0.2s; margin-left: 0.5rem; }
+  .stat-card:nth-child(4) { animation-delay: 0.3s; margin-left: 2rem; }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(12px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .stat-icon {
+    width: 38px; height: 38px; border-radius: 8px;
+    background: var(--accent-light);
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+    font-size: 16px;
+  }
+
+  .stat-info { flex: 1; }
+  .stat-label {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 2px;
+  }
+  .stat-value {
+    font-size: 0.95rem;
+    font-weight: 400;
+    color: var(--ink);
+  }
+
+  .live-dot {
+    width: 7px; height: 7px; border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.85); }
+  }
+
+  /* ── FEATURES STRIP ── */
+  .features {
+    padding: 5rem 3rem;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0;
+    border: 1px solid var(--rule);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  .feature {
+    padding: 2rem 1.75rem;
+    border-right: 1px solid var(--rule);
+    transition: background 0.2s;
+  }
+  .feature:last-child { border-right: none; }
+  .feature:hover { background: var(--paper-warm); }
+
+  .feature-num {
+    font-family: var(--font-mono);
+    font-size: 10px;
+    letter-spacing: 0.12em;
+    color: var(--accent);
+    margin-bottom: 1rem;
+  }
+
+  .feature h3 {
+    font-size: 1.05rem;
+    font-weight: 400;
+    margin-bottom: 0.6rem;
+    color: var(--ink);
+  }
+
+  .feature p {
+    font-size: 0.85rem;
+    color: var(--ink-muted);
+    line-height: 1.6;
+  }
+
+  /* ── REVIEW SECTION ── */
+  #review {
+    padding: 6rem 3rem;
+    display: grid;
+    grid-template-columns: 1fr 1.4fr;
+    gap: 5rem;
+    align-items: start;
+    border-bottom: 1px solid var(--rule);
+  }
+
+  .review-intro .section-label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 1.5rem;
+    display: flex; align-items: center; gap: 0.75rem;
+  }
+  .review-intro .section-label::before {
+    content: ''; display: block;
+    width: 28px; height: 1px; background: var(--accent);
+  }
+
+  .review-intro h2 {
+    font-size: clamp(1.8rem, 3vw, 2.6rem);
+    font-weight: 300;
+    line-height: 1.2;
+    margin-bottom: 1.25rem;
+  }
+  .review-intro h2 em { font-style: italic; color: var(--accent); }
+
+  .review-intro p {
+    font-size: 0.95rem;
+    color: var(--ink-muted);
+    line-height: 1.8;
+    margin-bottom: 2rem;
+  }
+
+  .privacy-note {
+    display: flex; align-items: flex-start; gap: 0.75rem;
+    background: var(--accent-light);
+    border-left: 3px solid var(--accent);
+    padding: 1rem 1.25rem;
+    border-radius: 0 6px 6px 0;
+    font-size: 0.82rem;
+    color: var(--accent-deep);
+    line-height: 1.6;
+  }
+
+  /* ── FORM ── */
+  form {
+    display: flex; flex-direction: column; gap: 1.25rem;
+  }
+
+  .field { display: flex; flex-direction: column; gap: 0.4rem; }
+
+  label {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--ink-muted);
+  }
+
+  input, textarea {
+    font-family: var(--font-serif);
+    font-size: 1rem;
+    color: var(--ink);
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    padding: 0.75rem 1rem;
+    transition: border-color 0.2s;
+    outline: none;
+    resize: vertical;
+  }
+  input:focus, textarea:focus { border-color: var(--accent); }
+  textarea { min-height: 140px; }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+
+  .form-footer {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-top: 0.5rem;
+  }
+
+  .submit-note {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.04em;
+  }
+
+  .btn-submit {
+    display: inline-flex; align-items: center; gap: 0.5rem;
+    background: var(--ink);
+    color: var(--paper);
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background 0.2s, transform 0.15s;
+  }
+  .btn-submit:hover { background: var(--accent-deep); transform: translateY(-1px); }
+  .btn-submit:active { transform: translateY(0); }
+  .btn-submit:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+
+  .form-status {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    padding: 0.75rem 1rem;
+    border-radius: 4px;
+    display: none;
+    letter-spacing: 0.04em;
+  }
+  .form-status.success {
+    display: block;
+    background: var(--accent-light);
+    color: var(--accent-deep);
+    border: 1px solid rgba(26,107,74,0.2);
+  }
+  .form-status.error {
+    display: block;
+    background: #fdecea;
+    color: #8b1a1a;
+    border: 1px solid rgba(139,26,26,0.2);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 2.5rem 3rem;
+    display: flex; align-items: center; justify-content: space-between;
+  }
+
+  .footer-left {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+  }
+
+  .footer-right {
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--ink-faint);
+    letter-spacing: 0.06em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    nav { padding: 1rem 1.5rem; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; padding: 7rem 1.5rem 3rem; }
+    .hero-visual { display: none; }
+    .features { padding: 3rem 1.5rem; }
+    .features-grid { grid-template-columns: 1fr 1fr; }
+    .feature:nth-child(2) { border-right: none; }
+    .feature:nth-child(3) { border-right: 1px solid var(--rule); border-top: 1px solid var(--rule); }
+    .feature:nth-child(4) { border-right: none; border-top: 1px solid var(--rule); }
+    #review { grid-template-columns: 1fr; padding: 4rem 1.5rem; gap: 2.5rem; }
+    .form-row { grid-template-columns: 1fr; }
+    footer { flex-direction: column; gap: 0.75rem; padding: 2rem 1.5rem; text-align: center; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+  <div class="nav-logo">
+    <div class="logo-mark">SM</div>
+    <span class="nav-wordmark">StatMate</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#review">Leave a Review</a>
+    <a href="workspace.html" class="btn-enter">Enter Workspace →</a>
+  </div>
+</nav>
+
+<!-- ── HERO ── -->
+<section class="hero">
+  <div class="hero-text">
+    <div class="hero-eyebrow">University of Hargeisa · Statistics</div>
+    <h1>Your <em>complete</em><br>statistics workspace</h1>
+    <p class="hero-sub">StatMate brings together the full UoH curriculum, an AI tutor calibrated for your courses, statistical tables, and an R-aware calculator — all in one place.</p>
+    <div class="hero-cta">
+      <a href="workspace.html" class="btn-primary">
+        Enter Workspace
+        <span>→</span>
+      </a>
+      <a href="#review" class="btn-ghost">Leave feedback</a>
+    </div>
+  </div>
+
+  <div class="hero-visual" aria-hidden="true">
+    <div class="stat-card">
+      <div class="stat-icon">📚</div>
+      <div class="stat-info">
+        <div class="stat-label">Curriculum</div>
+        <div class="stat-value">Year 3 · Semester 2 — Full library loaded</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🤖</div>
+      <div class="stat-info">
+        <div class="stat-label">AI Assistant</div>
+        <div class="stat-value">StatMate AI · Gemini — Calibrated for UoH</div>
+      </div>
+      <div class="live-dot"></div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">📊</div>
+      <div class="stat-info">
+        <div class="stat-label">Statistical Tables</div>
+        <div class="stat-value">Z, t, F, Chi-Square, Durbin-Watson</div>
+      </div>
+    </div>
+    <div class="stat-card">
+      <div class="stat-icon">🧮</div>
+      <div class="stat-info">
+        <div class="stat-label">Calculator</div>
+        <div class="stat-value">Scientific + R-compatible operations</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ── FEATURES ── -->
+<section class="features" id="features">
+  <div class="features-grid">
+    <div class="feature">
+      <div class="feature-num">01</div>
+      <h3>Curriculum Library</h3>
+      <p>Every module, lecture note, and past paper — organised by academic year and semester.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-num">02</div>
+      <h3>AI Tutor</h3>
+      <p>Ask anything about biostatistics, R programming, research methodology, and your Semester 6 courses.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-num">03</div>
+      <h3>Stat Tables</h3>
+      <p>Smart-search Z, t, F, Chi-Square, Durbin-Watson, and Runs Test critical values from your textbooks.</p>
+    </div>
+    <div class="feature">
+      <div class="feature-num">04</div>
+      <h3>Calculator</h3>
+      <p>Scientific operations with trigonometry, logarithms, and square roots — always within reach.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ── REVIEW FORM ── -->
+<section id="review">
+  <div class="review-intro">
+    <div class="section-label">Private feedback</div>
+    <h2>Share your <em>honest</em> thoughts</h2>
+    <p>This goes directly to the team — not publicly visible. Whether it's a bug, a missing resource, or simply what's working well, every message is read carefully.</p>
+    <div class="privacy-note">
+      🔒 Submissions are stored privately in a secure database. Your name and email are optional and will never be shared.
+    </div>
+  </div>
+
+  <form id="reviewForm">
+    <div class="form-row">
+      <div class="field">
+        <label for="name">Name (optional)</label>
+        <input type="text" id="name" name="name" placeholder="e.g. Faadumo A." autocomplete="name" />
+      </div>
+      <div class="field">
+        <label for="email">Email (optional)</label>
+        <input type="email" id="email" name="email" placeholder="for a reply" autocomplete="email" />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="message">Your review / message *</label>
+      <textarea id="message" name="message" placeholder="What's working well? What's missing? Any bugs? Your thoughts help shape StatMate." required></textarea>
+    </div>
+
+    <div id="formStatus" class="form-status" role="alert"></div>
+
+    <div class="form-footer">
+      <span class="submit-note">Saved privately to Supabase</span>
+      <button type="submit" class="btn-submit" id="submitBtn">
+        Send privately →
+      </button>
+    </div>
+  </form>
+</section>
+
+<!-- ── FOOTER ── -->
+<footer>
+  <div class="footer-left">StatMate · University of Hargeisa Statistics</div>
+  <div class="footer-right">Built for the UoH Cohort · 2025</div>
+</footer>
+
+<script>
+  /* ── SUPABASE CONFIG ── */
+  /* Replace these two values with your actual Supabase project URL and anon key */
+  const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY_HERE';
+
+  /* ── FORM SUBMISSION ── */
+  document.getElementById('reviewForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+
+    const btn = document.getElementById('submitBtn');
+    const status = document.getElementById('formStatus');
+
+    const name = document.getElementById('name').value.trim();
+    const email = document.getElementById('email').value.trim();
+    const message = document.getElementById('message').value.trim();
+
+    if (!message) {
+      status.className = 'form-status error';
+      status.textContent = 'Please write a message before submitting.';
+      return;
+    }
+
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+    status.className = 'form-status';
+    status.style.display = 'none';
+
+    try {
+      const res = await fetch(`https://dedyworlrfalwoujwkyx.supabase.co/rest/v1/private_reviews`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'apikey': 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZHl3b3JscmZhbHdvdWp3a3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjM3MDIsImV4cCI6MjA4OTE5OTcwMn0.TM-Akj8jijqc8WE8DU3CX6PDJX7s-ORcF0cFvYlLNN8',
+          'Authorization': `Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRlZHl3b3JscmZhbHdvdWp3a3l4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MjM3MDIsImV4cCI6MjA4OTE5OTcwMn0.TM-Akj8jijqc8WE8DU3CX6PDJX7s-ORcF0cFvYlLNN8`,
+          'Prefer': 'return=minimal'
+        },
+        body: JSON.stringify({ name, email, message })
+      });
+
+      if (res.ok || res.status === 201) {
+        status.className = 'form-status success';
+        status.textContent = '✓ Received — thank you. Your feedback has been saved privately.';
+        document.getElementById('reviewForm').reset();
+      } else {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err.message || `HTTP ${res.status}`);
+      }
+    } catch (err) {
+      status.className = 'form-status error';
+      status.textContent = `Something went wrong: ${err.message}. Please try again or contact the team directly.`;
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Send privately →';
+    }
+  });
+</script>
+
+</body>
+</html>
