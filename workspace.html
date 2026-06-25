@@ -648,7 +648,7 @@ async function scanFolder(prefix, labelPrefix, allFiles, depth) {
     const items = await fetchCloudFiles(prefix);
     for (const item of items) {
         if (!item || item.name === '.emptyFolderPlaceholder') continue;
-        if (item.id) {
+        if (item.metadata) {
             // It's a file
             const label = labelPrefix ? `${labelPrefix} · ${item.name}` : item.name;
             allFiles.push({ label, path: `${prefix}${item.name}` });
