@@ -606,13 +606,12 @@ async function renderLibrary(idx) {
 }
 
 // ── CARD BUILDER (scans 3 levels deep: course → subfolder → week → file) ─────
+// ── CARD BUILDER (scans 3 levels deep: course → subfolder → week → file) ─────
 async function buildCard(semFolder, course) {
     // --- NEW: Google Drive Intercept for DHS Files ---
     if (semFolder === 'DHS Files') {
-        cconst driveLinks = {
-            'Somalia': 'https://drive.google.com/drive/folders/1wNooibQ_Ci9CVXWFIEgrfsRVyRUqEZXa?usp=sharing',
-            'Somaliland': 'https://drive.google.com/drive/folders/1F3Sk2JdldkYn13P06u2HmR-2bKMzck22?usp=sharing'
-        };
+        const driveLinks = {
+            'All files': 'https://drive.google.com/drive/u/0/folders/19RiwvM59N3VtENNE4KukgYysHv_U7Lzs',
         
         return `
         <div class="course-card" data-course="${course.toLowerCase()}">
