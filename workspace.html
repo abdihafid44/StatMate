@@ -147,7 +147,6 @@
             <div class="sidebar-label">Academic Years</div>
         </aside>
         <main>
-            <!-- LIBRARY -->
             <div id="tab-library" class="tab-content active">
                 <div class="lib-header">
                     <div>
@@ -162,7 +161,6 @@
                 <div id="course-grid" class="course-grid"></div>
             </div>
 
-            <!-- VIEWER -->
             <div id="tab-viewer" class="tab-content">
                 <div id="reader-frame" class="viewer-empty">
                     <i class="ti ti-file-search"></i>
@@ -170,7 +168,6 @@
                 </div>
             </div>
 
-            <!-- AI CHAT -->
             <div id="tab-ai" class="tab-content">
                 <div class="chat-shell">
                     <div class="chat-header">
@@ -196,7 +193,6 @@
                 </div>
             </div>
 
-            <!-- CALCULATOR -->
             <div id="tab-calc" class="tab-content">
                 <div class="calc-shell">
                     <div class="calc-display">
@@ -229,7 +225,6 @@
                 </div>
             </div>
 
-            <!-- STAT TABLES -->
             <div id="tab-tables" class="tab-content">
                 <div style="max-width:900px">
                     <div style="margin-bottom:1.5rem">
@@ -251,7 +246,6 @@
                     .stat-table td.smart-hit,.stat-table tr.smart-hit-row td:first-child{background:#fef3c7!important;color:#92400e!important;font-weight:800;box-shadow:inset 0 0 0 2px #f59e0b}
                     </style>
 
-                    <!-- Smart Table Search -->
                     <div class="smart-lookup-card">
                         <div>
                             <div class="smart-title">Smart Table Search</div>
@@ -312,7 +306,6 @@
                         <div id="smart-result" class="smart-result">Select a test, then search.</div>
                     </div>
 
-                    <!-- Table selector tabs -->
                     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:1.5rem">
                         <button class="stab-btn stab-active" onclick="showStatTab('z')">Z Normal</button>
                         <button class="stab-btn" onclick="showStatTab('t')">t Distribution</button>
@@ -326,7 +319,6 @@
                         <button class="stab-btn" onclick="showStatTab('runs')">Runs Test</button>
                     </div>
 
-                    <!-- Z Table -->
                     <div id="stab-z" class="stab-content">
                         <div class="card" style="padding:1.25rem">
                             <div class="section-title">Standard Normal Distribution — Cumulative Probabilities P(Z ≤ z)</div>
@@ -340,7 +332,6 @@
                         </div>
                     </div>
 
-                    <!-- t Table -->
                     <div id="stab-t" class="stab-content" style="display:none">
                         <div class="card" style="padding:1.25rem">
                             <div class="section-title">t Distribution — Critical Values</div>
@@ -354,7 +345,6 @@
                         </div>
                     </div>
 
-                    <!-- Chi-Square Table -->
                     <div id="stab-chi" class="stab-content" style="display:none">
                         <div class="card" style="padding:1.25rem">
                             <div class="section-title">Chi-Square Distribution — Critical Values</div>
@@ -368,7 +358,6 @@
                         </div>
                     </div>
 
-                    <!-- F Tables (5 alpha levels) -->
                     <div id="stab-f005" class="stab-content" style="display:none">
                         <div class="card" style="padding:1.25rem">
                             <div class="section-title">F Distribution — α = 0.005</div>
@@ -406,7 +395,6 @@
                     </div>
 
 
-                    <!-- DURBIN-WATSON -->
                     <div id="stab-dw" class="stab-content" style="display:none">
                         <div class="card" style="padding:1.25rem">
                             <div class="section-title">Durbin-Watson d Statistic — α = 0.05</div>
@@ -429,7 +417,6 @@
                         </div>
                     </div>
 
-                    <!-- RUNS TEST -->
                     <div id="stab-runs" class="stab-content" style="display:none">
                         <div class="card" style="padding:1.25rem;margin-bottom:1rem">
                             <div class="section-title">Runs Test — Lower Critical Values (α = 0.05)</div>
@@ -443,8 +430,7 @@
                         </div>
                     </div>
 
-                    <!-- QUICK LOOKUP -->
-                </div>
+                    </div>
             </div>
         </main>
     </div>
@@ -621,6 +607,35 @@ async function renderLibrary(idx) {
 
 // ── CARD BUILDER (scans 3 levels deep: course → subfolder → week → file) ─────
 async function buildCard(semFolder, course) {
+    // --- NEW: Google Drive Intercept for DHS Files ---
+    if (semFolder === 'DHS Files') {
+        const driveLinks = {
+            'Somalia': 'https://drive.google.com/drive/folders/1wNooibQ_Ci9CVXWFIEgrfsRVyRUqEZXa?usp=sharing',
+            'Somaliland': 'https://drive.google.com/drive/folders/1F3Sk2JdldkYn13P06u2HmR-2bKMzck22?usp=sharing'
+        };
+        
+        return `
+        <div class="course-card" data-course="${course.toLowerCase()}">
+            <div class="card-head">
+                <div class="card-icon-wrap">
+                    <div class="card-icon"><i class="ti ti-database"></i></div>
+                    <span class="card-title">${course} Datasets</span>
+                </div>
+            </div>
+            <div class="file-row" onclick="window.open('${driveLinks[course]}', '_blank')" style="background:#f0fdf4; border-color:#bbf7d0;">
+                <div style="display:flex;align-items:center;gap:.6rem;min-width:0">
+                    <i class="ti ti-brand-google-drive" style="color:#16a34a;font-size:1.1rem;flex-shrink:0"></i>
+                    <span class="file-name" style="color:#15803d;font-weight:700">Open in Google Drive</span>
+                </div>
+                <i class="ti ti-external-link" style="color:#16a34a;font-size:.9rem"></i>
+            </div>
+            <div style="padding:.75rem .2rem;font-size:.75rem;color:#64748b;line-height:1.5;margin-top:.3rem">
+                High-capacity .sav datasets are stored externally to save application bandwidth. Click above to view and download.
+            </div>
+        </div>`;
+    }
+    // -------------------------------------------------
+
     const folderPath = `${semFolder}/${course}/`;
     const allFiles = [];
     await scanFolder(folderPath, '', allFiles, 0);
